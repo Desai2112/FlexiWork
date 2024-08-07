@@ -1,30 +1,52 @@
 // import React from 'react';
+import { Link } from 'react-router-dom';
 
-const LNavbar = () => (
-  <header className="px-4 lg:px-6 h-14 flex items-center">
-    <a className="flex items-center justify-center" href="#">
-      <img
-        src="https://res.cloudinary.com/dgvslio7u/image/upload/v1720845639/tofmmxz1oj8lvexsqaet.png"
-        alt="Project Logo"
-        className="h-10 w-auto"
-      />
-      <span className="sr-only">Freelance Hub</span>
-    </a>
-    <nav className="ml-auto flex gap-4 sm:gap-6">
-      <a className="text-sm font-medium hover:underline underline-offset-4" href="#">
-        Find Freelancers
-      </a>
-      <a className="text-sm font-medium hover:underline underline-offset-4" href="#">
-        Post a Job
-      </a>
-      <a className="text-sm font-medium hover:underline underline-offset-4" href="#">
-        Pricing
-      </a>
-      <a className="text-sm font-medium hover:underline underline-offset-4" href="#">
-        About
-      </a>
-    </nav>
-  </header>
-);
+const LNavbar = () => {
+  return (
+    <header className="bg-white shadow-md">
+      <div className="container mx-auto flex items-center justify-between px-4 py-3 lg:px-6">
+        <Link to="/" className="flex items-center">
+          <img
+            src="https://res.cloudinary.com/dgvslio7u/image/upload/v1722411107/tyqao18fdxtj7pefzc3n.png"
+            alt="Freelance Hub"
+            className="h-18 w-24"
+          />
+        </Link>
+        <nav className="flex-1 flex items-center justify-center space-x-16 text-lg font-medium">
+          <a
+            href="#hero"
+            className="hover:text-blue-600 transition-colors"
+          >
+            Home
+          </a>
+          <a
+            href="#services"
+            className="hover:text-blue-600 transition-colors"
+          >
+            Services
+          </a>
+          <a
+            href="#freelancers"
+            className="hover:text-blue-600 transition-colors"
+          >
+            Freelancers
+          </a>
+          <a
+            href="#contact"
+            className="hover:text-blue-600 transition-colors"
+          >
+            Contact Us
+          </a>
+        </nav>
+        <Link
+          to="/login"
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+        >
+          Login
+        </Link>
+      </div>
+    </header>
+  );
+};
 
 export default LNavbar;

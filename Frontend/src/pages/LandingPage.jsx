@@ -1,6 +1,6 @@
 // import React from 'react';
 
-import Footer from "../components/Landing Page/Footer";
+import ContactUs from "../components/Landing Page/ContactUs";
 import FreelancersSection from "../components/Landing Page/FreelancersSection";
 import HeroSection from "../components/Landing Page/HeroSection";
 import LNavbar from "../components/Landing Page/LNavbar";
@@ -12,11 +12,19 @@ const LandingPage = () => (
   <>
     <LNavbar />
     <main>
-      <HeroSection />
-      <ServicesSection />
-      <FreelancersSection />
+      <section id="hero">
+        <HeroSection />
+      </section>
+      <section id="services">
+        <ServicesSection />
+      </section>
+      <section id="freelancers">
+        <FreelancersSection />
+      </section>
+      <section id="contact">
+        <ContactUs />
+      </section>
     </main>
-    <Footer />
   </>
 );
 

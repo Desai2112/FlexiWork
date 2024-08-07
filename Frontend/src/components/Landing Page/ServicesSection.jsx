@@ -1,40 +1,84 @@
-// import React from 'react';
+// ServicesSection.jsx
 
-const ServicesSection = () => (
-  <section className="w-full py-12 md:py-24 lg:py-32 bg-muted">
-    <div className="container px-4 md:px-6">
-      <div className="flex flex-col items-center justify-center space-y-4 text-center">
-        <div className="space-y-2">
-          <div className="inline-block rounded-lg bg-muted px-3 py-1 text-sm">Our Services</div>
-          <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">Discover the Expertise You Need</h2>
-          <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-            From design to development, marketing to accounting, our freelancers are ready to tackle any task.
+// import React from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faLaptopCode, faPalette, faBullhorn, faMobileAlt, faDatabase, faHandshake } from '@fortawesome/free-solid-svg-icons';
+
+const ServicesSection = () => {
+  return (
+    <section className="py-12 bg-gray-100">
+      <div className="container mx-auto px-4">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold text-gray-900">Our Services</h2>
+          <p className="mt-4 text-lg text-gray-600">
+            We offer a comprehensive range of services to elevate your business and help you thrive in the digital landscape.
           </p>
         </div>
-      </div>
-      <div className="mx-auto grid max-w-5xl items-center gap-6 py-12 lg:grid-cols-3 lg:gap-12">
-        <div className="grid gap-1">
-          <div className="inline-block rounded-lg bg-primary px-3 py-1 text-sm text-primary-foreground">Design</div>
-          <h3 className="text-xl font-bold">Graphic Design</h3>
-          <p className="text-muted-foreground">Bring your ideas to life with our talented graphic designers.</p>
-        </div>
-        <div className="grid gap-1">
-          <div className="inline-block rounded-lg bg-secondary px-3 py-1 text-sm text-secondary-foreground">
-            Development
+        <div className="grid md:grid-cols-3 gap-8">
+          <div className="bg-white p-6 rounded-lg shadow-lg text-center">
+            <FontAwesomeIcon icon={faLaptopCode} className="text-blue-500 text-3xl mb-4" />
+            <h3 className="text-xl font-semibold mb-2">Web Development</h3>
+            <p className="text-gray-600 mb-4">
+              Bring your digital vision to life with our expert web developers. We create responsive, high-performance websites tailored to your needs.
+            </p>
+            <p className="text-gray-500 text-sm">
+              Technologies: React, Angular, Vue, Node.js, and more.
+            </p>
           </div>
-          <h3 className="text-xl font-bold">Web Development</h3>
-          <p className="text-muted-foreground">
-            Build stunning websites and web applications with our expert developers.
-          </p>
-        </div>
-        <div className="grid gap-1">
-          <div className="inline-block rounded-lg bg-accent px-3 py-1 text-sm text-accent-foreground">Marketing</div>
-          <h3 className="text-xl font-bold">Digital Marketing</h3>
-          <p className="text-muted-foreground">Reach your target audience with our experienced digital marketers.</p>
+          <div className="bg-white p-6 rounded-lg shadow-lg text-center">
+            <FontAwesomeIcon icon={faPalette} className="text-blue-500 text-3xl mb-4" />
+            <h3 className="text-xl font-semibold mb-2">Graphic Design</h3>
+            <p className="text-gray-600 mb-4">
+              Elevate your brand with stunning visual designs. From logos to promotional materials, our designs will make your brand stand out.
+            </p>
+            <p className="text-gray-500 text-sm">
+              Services: Logo Design, Branding, Print Materials, and more.
+            </p>
+          </div>
+          <div className="bg-white p-6 rounded-lg shadow-lg text-center">
+            <FontAwesomeIcon icon={faBullhorn} className="text-blue-500 text-3xl mb-4" />
+            <h3 className="text-xl font-semibold mb-2">Digital Marketing</h3>
+            <p className="text-gray-600 mb-4">
+              Reach your target audience with our digital marketing expertise. We use the latest strategies to enhance your online presence and drive results.
+            </p>
+            <p className="text-gray-500 text-sm">
+              Strategies: SEO, PPC, Social Media Marketing, and more.
+            </p>
+          </div>
+          <div className="bg-white p-6 rounded-lg shadow-lg text-center">
+            <FontAwesomeIcon icon={faMobileAlt} className="text-blue-500 text-3xl mb-4" />
+            <h3 className="text-xl font-semibold mb-2">Mobile App Development</h3>
+            <p className="text-gray-600 mb-4">
+              Develop high-quality mobile applications that deliver a seamless user experience across various platforms.
+            </p>
+            <p className="text-gray-500 text-sm">
+              Platforms: iOS, Android, Cross-platform.
+            </p>
+          </div>
+          <div className="bg-white p-6 rounded-lg shadow-lg text-center">
+            <FontAwesomeIcon icon={faDatabase} className="text-blue-500 text-3xl mb-4" />
+            <h3 className="text-xl font-semibold mb-2">Database Management</h3>
+            <p className="text-gray-600 mb-4">
+              Ensure your data is managed efficiently with our database management services. We provide secure, scalable, and optimized solutions.
+            </p>
+            <p className="text-gray-500 text-sm">
+              Technologies: SQL, NoSQL, Cloud Databases.
+            </p>
+          </div>
+          <div className="bg-white p-6 rounded-lg shadow-lg text-center">
+            <FontAwesomeIcon icon={faHandshake} className="text-blue-500 text-3xl mb-4" />
+            <h3 className="text-xl font-semibold mb-2">Consulting & Strategy</h3>
+            <p className="text-gray-600 mb-4">
+              Get expert advice and strategies tailored to your business goals. Our consultants work with you to develop effective solutions.
+            </p>
+            <p className="text-gray-500 text-sm">
+              Services: Business Strategy, Technology Consulting, Process Optimization.
+            </p>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
-);
+    </section>
+  );
+};
 
 export default ServicesSection;

@@ -1,43 +1,64 @@
-// import React from 'react';
+// src/components/Freelancer/HeroSection.js
 
-const HeroSection = () => (
-  <section className="w-full py-12 md:py-24 lg:py-32">
-    <div className="container px-4 md:px-6">
-      <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
-        <div className="flex flex-col justify-center space-y-4">
-          <div className="space-y-2">
-            <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none">
-              Unlock Your Potential with Our Freelance Experts
-            </h1>
-            <p className="max-w-[600px] text-muted-foreground md:text-xl">
-              Discover the perfect freelancer for your project and take your business to new heights.
-            </p>
+import { useEffect } from 'react';
+import { motion } from 'framer-motion';
+
+const HeroSection = () => {
+  useEffect(() => {
+    const textElements = document.querySelectorAll('.hero-text');
+    textElements.forEach((el, index) => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(30px)';
+      setTimeout(() => {
+        el.style.transition = 'opacity 1s ease-out, transform 1s ease-out';
+        el.style.opacity = '1';
+        el.style.transform = 'translateY(0)';
+      }, index * 300); // Delay for each text element
+    });
+  }, []);
+
+  return (
+    <section className="w-full py-12 md:py-24 lg:py-32 bg-white text-gray-800">
+      <div className="container px-4 md:px-6">
+        <div className="grid gap-8 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
+          <div className="flex flex-col justify-center space-y-6">
+            <div className="space-y-4 hero-text">
+              <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl xl:text-6xl leading-tight">
+                Transform Your Projects with Top Freelancers
+              </h1>
+              <p className="text-lg max-w-lg md:text-xl">
+                Connect with skilled freelancers who can elevate your business and deliver outstanding results.
+              </p>
+            </div>
+            <div className="flex flex-col gap-3 min-[400px]:flex-row">
+              <a
+                className="inline-flex items-center justify-center rounded-md bg-blue-600 px-6 py-3 text-base font-semibold text-white shadow-lg transition-transform transform hover:scale-105 hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600"
+                href="#"
+              >
+                Find Freelancers
+              </a>
+              <a
+                className="inline-flex items-center justify-center rounded-md border border-gray-300 bg-gray-100 px-6 py-3 text-base font-semibold text-gray-800 shadow-md transition-transform transform hover:scale-105 hover:bg-gray-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-300"
+                href="#"
+              >
+                Join as a Freelancer
+              </a>
+            </div>
           </div>
-          <div className="flex flex-col gap-2 min-[400px]:flex-row">
-            <a
-              className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-8 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
-              href="#"
-            >
-              Hire a Freelancer
-            </a>
-            <a
-              className="inline-flex h-10 items-center justify-center rounded-md border border-input bg-background px-8 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
-              href="#"
-            >
-              Become a Freelancer
-            </a>
-          </div>
+          <motion.img
+            src="https://res.cloudinary.com/dgvslio7u/image/upload/v1723056044/ciarrdkzdv5acdtixix4.png"
+            width="550"
+            height="550"
+            alt="Hero"
+            className="mx-auto rounded-xl object-cover shadow-lg"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, ease: 'easeOut' }}
+          />
         </div>
-        <img
-          src="/placeholder.svg"
-          width="550"
-          height="550"
-          alt="Hero"
-          className="mx-auto aspect-video overflow-hidden rounded-xl object-cover sm:w-full lg:order-last lg:aspect-square"
-        />
       </div>
-    </div>
-  </section>
-);
+    </section>
+  );
+};
 
 export default HeroSection;
