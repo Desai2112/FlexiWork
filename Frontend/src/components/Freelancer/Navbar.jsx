@@ -1,4 +1,5 @@
-import React from 'react';
+/* eslint-disable react/no-unknown-property */
+// import React from 'react';
 
 const Navbar = () => {
   return (

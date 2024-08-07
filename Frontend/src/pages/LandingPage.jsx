@@ -1,9 +1,23 @@
-// import React from 'react'
+// import React from 'react';
 
-const LandingPage = () => {
-  return (
-    <div>LandingPage</div>
-  )
-}
+import Footer from "../components/Landing Page/Footer";
+import FreelancersSection from "../components/Landing Page/FreelancersSection";
+import HeroSection from "../components/Landing Page/HeroSection";
+import LNavbar from "../components/Landing Page/LNavbar";
+import ServicesSection from "../components/Landing Page/ServicesSection";
+
+
+
+const LandingPage = () => (
+  <>
+    <LNavbar />
+    <main>
+      <HeroSection />
+      <ServicesSection />
+      <FreelancersSection />
+    </main>
+    <Footer />
+  </>
+);
 
 export default LandingPage;
