@@ -1,4 +1,4 @@
-import React from 'react';
+// import React from 'react';
 
 const Footer = () => (
   <footer className="w-full bg-muted py-8">
