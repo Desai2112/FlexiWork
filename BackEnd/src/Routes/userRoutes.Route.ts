@@ -4,6 +4,8 @@ import {
   getDetails,
   loginUser,
   logOut,
+  sendOtp,
+  verifyOtp,
 } from "../Controllers/user.controller";
 import {
   loginBodyType,
@@ -21,6 +23,9 @@ router
   .post<any, SignUpResponseBodyType | GenericResponseType, SignUpBodyType>(
     addUser,
   );
+
+router.route("/send-otp").post(sendOtp);
+router.route("/verify-otp").post(verifyOtp);
 router
   .route("/login")
   .post<any, loginResponseBodyType | GenericResponseType, loginBodyType>(

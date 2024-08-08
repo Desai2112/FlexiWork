@@ -21,7 +21,7 @@ const HeroSection = () => {
     <section className="w-full py-12 md:py-24 lg:py-32 bg-white text-gray-800">
       <div className="container px-4 md:px-6">
         <div className="grid gap-8 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
-          <div className="flex flex-col justify-center space-y-6">
+          <div className="flex flex-col ml-8 justify-center space-y-6">
             <div className="space-y-4 hero-text">
               <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl xl:text-6xl leading-tight">
                 Transform Your Projects with Top Freelancers
@@ -50,7 +50,7 @@ const HeroSection = () => {
             width="550"
             height="550"
             alt="Hero"
-            className="mx-auto rounded-xl object-cover shadow-lg"
+            className="mx-auto rounded-xl object-cover mr-8 shadow-lg"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, ease: 'easeOut' }}

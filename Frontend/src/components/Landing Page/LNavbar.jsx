@@ -5,7 +5,7 @@ const LNavbar = () => {
   return (
     <header className="bg-white shadow-md">
       <div className="container mx-auto flex items-center justify-between px-4 py-3 lg:px-6">
-        <Link to="/" className="flex items-center">
+        <Link to="/" className="flex ml-8 items-center">
           <img
             src="https://res.cloudinary.com/dgvslio7u/image/upload/v1722411107/tyqao18fdxtj7pefzc3n.png"
             alt="Freelance Hub"
@@ -40,7 +40,7 @@ const LNavbar = () => {
         </nav>
         <Link
           to="/login"
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+          className="bg-blue-600 text-white px-4 py-2 mr-8 rounded-lg hover:bg-blue-700 transition-colors"
         >
           Login
         </Link>

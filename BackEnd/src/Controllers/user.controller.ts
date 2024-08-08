@@ -9,6 +9,102 @@ import {
   SignUpResponseBodyType,
 } from "../Schemas/user.schema";
 import { GenericResponseType } from "../Schemas/genericResponse.schema";
+import { sendOTPEmail } from "../Configurations/emailServices";
+
+const sendOtp = async (req: Request, res: Response) => {
+  try {
+    const { email } = req.body;
+
+    if (!validator.isEmail(email)) {
+      return res.status(400).json({
+        message: "Email is not valid.",
+        success: false,
+      });
+    }
+
+    if (!email) {
+      return res.status(404).json({
+        success: false,
+        message: "Email is required",
+      });
+    }
+    const user = await User.findOne({ email: email });
+    if (user && user.emailVerified) {
+      return res.status(409).json({
+        success: false,
+        message: "User already verified",
+      });
+    } else if (user) {
+      return res.status(400).json({
+        message: "Email already sent.",
+        success: false,
+      });
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+
+    await User.create({
+      email: email,
+      otp: otp,
+      otpExpires: otpExpires,
+    });
+
+    await sendOTPEmail(email, otp);
+    return res.status(200).json({
+      message: "OTP send successfully to your email.",
+      success: true,
+    });
+  } catch (error) {
+    console.log("Error Accured: ", error);
+    return res.status(500).json({
+      message: "Internal Server Error",
+      success: false,
+    });
+  }
+};
+
+const verifyOtp = async (req: Request, res: Response) => {
+  try {
+    const { email, otp } = req.body;
+
+    if (!email || !otp) {
+      return res.status(400).json({
+        message: "Email and OTP are required.",
+        success: false,
+      });
+    }
+    const user = await User.findOne({ email: email });
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+        success: false,
+      });
+    } else {
+      const verified = user.verifyOTP(otp);
+
+      if (verified) {
+        user.emailVerified = true;
+        await user.save();
+        return res.status(200).json({
+          message: "OTP is verified.",
+          success: true,
+        });
+      } else {
+        return res.status(400).json({
+          message: "Invalid OTP.",
+          success: false,
+        });
+      }
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "Internal Server Error",
+      success: false,
+    });
+  }
+};
 
 const addUser = async (
   req: Request<
@@ -69,7 +165,7 @@ const addUser = async (
         name: newUser.name,
         email: newUser.email,
         role: newUser.role,
-        bio: newUser.bio,
+        bio: newUser.bio || "",
         createdAt: newUser.createdAt,
         updatedAt: newUser.updatedAt,
       },
@@ -123,7 +219,7 @@ const loginUser = async (
         name: user.name,
         email: user.email,
         role: user.role,
-        bio: user.bio,
+        bio: user.bio || "",
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
       },
@@ -180,4 +276,4 @@ const logOut = async (
   }
 };
 
-export { addUser, loginUser, getDetails, logOut };
+export { addUser, loginUser, getDetails, logOut, sendOtp, verifyOtp };
