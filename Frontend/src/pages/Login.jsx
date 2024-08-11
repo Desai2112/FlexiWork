@@ -1,58 +1,117 @@
-import React, { useState } from 'react';
-import '@fortawesome/fontawesome-free/css/all.min.css';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const Login = () => {
-  const [isSignUp, setIsSignUp] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const navigate = useNavigate();
 
-  const toggleSignUp = () => {
-    setIsSignUp(!isSignUp);
+  const handleEmailChange = (e) => {
+    setEmail(e.target.value);
+  };
+
+  const handlePasswordChange = (e) => {
+    setPassword(e.target.value);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await axios.post('YOUR_BACKEND_LOGIN_URL', {
+        email,
+        password
+      });
+      
+      const { role } = response.data;
+
+      // Redirect based on the role
+      if (role === 'admin') {
+        navigate('/admin-dashboard'); // Change to the admin dashboard route
+      } else if (role === 'user') {
+        navigate('/user-dashboard'); // Change to the user dashboard route
+      } else {
+        navigate('/'); // Default or error handling route
+      }
+    } catch (error) {
+      console.error('Login failed:', error);
+      // Handle error (e.g., show an error message to the user)
+    }
+  };
+
+  const handleGoBack = () => {
+    navigate('/');
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-purple-600 to-purple-700">
-      <div className={`relative w-full max-w-4xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden transform transition-transform duration-700 ${isSignUp ? 'right-panel-active' : ''}`}>
-        <div className={`absolute top-0 left-0 w-full md:w-1/2 p-8 transition-transform duration-700 ease-in-out ${isSignUp ? 'transform translate-x-full opacity-0 z-0' : 'transform translate-x-0 opacity-100 z-10'}`}>
-          <form className="bg-white">
-            <h1 className="text-2xl font-bold mb-4">Sign In</h1>
-            <div className="flex justify-center mb-4">
-              <a href="#" className="mx-2 text-xl"><i className="fa-brands fa-google-plus-g"></i></a>
-              <a href="#" className="mx-2 text-xl"><i className="fa-brands fa-facebook-f"></i></a>
-              <a href="#" className="mx-2 text-xl"><i className="fa-brands fa-github"></i></a>
-              <a href="#" className="mx-2 text-xl"><i className="fa-brands fa-linkedin-in"></i></a>
+    <div className="flex flex-col md:flex-row min-h-screen">
+      {/* Image Section */}
+      <div className="hidden md:block w-full md:w-1/2 bg-gray-200 flex items-center justify-center">
+        <img
+          src="https://res.cloudinary.com/dgvslio7u/image/upload/v1723302697/gzx6czd1vjihamz8yykt.png"
+          alt="Login Illustration"
+          className="object-cover w-full h-full md:max-w-full"
+        />
+      </div>
+      
+      {/* Login Form Section */}
+      <div className="w-full md:w-1/2 flex items-center justify-center bg-white p-4 md:p-8">
+        <div className="w-full max-w-sm md:max-w-md p-6">
+          <img
+            src="https://res.cloudinary.com/dgvslio7u/image/upload/v1722411107/tyqao18fdxtj7pefzc3n.png"
+            alt="Sign Up Logo"
+            className="mx-auto h-16 mb-4"
+          />
+          <h1 className="text-2xl md:text-3xl font-semibold mb-4 text-gray-800 text-center">Welcome to FlexiWork!</h1>
+          <p className="text-gray-600 text-center mb-6">Log in now and turn your passion into success.</p>
+
+          <form onSubmit={handleSubmit} className="flex flex-col space-y-6">
+            <div>
+              <label htmlFor="email" className="block text-gray-700 text-sm font-medium mb-1">Email Address</label>
+              <input
+                type="email"
+                id="email"
+                value={email}
+                onChange={handleEmailChange}
+                className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring-1 focus:ring-blue-500 transition-shadow"
+                placeholder="you@example.com"
+              />
             </div>
-            <span className="text-sm text-gray-600">or use your email for password</span>
-            <input type="email" placeholder="Email" className="block w-full p-2 my-2 border rounded-md" />
-            <input type="password" placeholder="Password" className="block w-full p-2 my-2 border rounded-md" />
-            <a href="#" className="text-sm text-purple-600">Forget Your Password?</a>
-            <button className="w-full py-2 mt-4 bg-purple-600 text-white rounded-md">Sign In</button>
-          </form>
-        </div>
-        <div className={`absolute top-0 left-0 w-full md:w-1/2 p-8 transition-transform duration-700 ease-in-out ${isSignUp ? 'transform translate-x-0 opacity-100 z-10' : 'transform -translate-x-full opacity-0 z-0'}`}>
-          <form className="bg-white">
-            <h1 className="text-2xl font-bold mb-4">Create Account</h1>
-            <div className="flex justify-center mb-4">
-              <a href="#" className="mx-2 text-xl"><i className="fa-brands fa-google-plus-g"></i></a>
-              <a href="#" className="mx-2 text-xl"><i className="fa-brands fa-facebook-f"></i></a>
-              <a href="#" className="mx-2 text-xl"><i className="fa-brands fa-github"></i></a>
-              <a href="#" className="mx-2 text-xl"><i className="fa-brands fa-linkedin-in"></i></a>
+            <div>
+              <label htmlFor="password" className="block text-gray-700 text-sm font-medium mb-1">Password</label>
+              <input
+                type="password"
+                id="password"
+                value={password}
+                onChange={handlePasswordChange}
+                className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring-1 focus:ring-blue-500 transition-shadow"
+                placeholder="Your password"
+              />
             </div>
-            <span className="text-sm text-gray-600">or use your email for registration</span>
-            <input type="text" placeholder="Name" className="block w-full p-2 my-2 border rounded-md" />
-            <input type="email" placeholder="Email" className="block w-full p-2 my-2 border rounded-md" />
-            <input type="password" placeholder="Password" className="block w-full p-2 my-2 border rounded-md" />
-            <button className="w-full py-2 mt-4 bg-purple-600 text-white rounded-md">Sign Up</button>
+            <button
+              type="submit"
+              className="w-full bg-blue-500 text-white py-2 rounded-lg shadow hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+            >
+              Sign In
+            </button>
+            <div className="mt-4 text-center">
+              <a href="#forgot-password" className="text-[#1e4487] hover:underline">Forgot Password?</a>
+              <p className="text-gray-600 mt-2">
+                <Link to="/signup" className="text-blue-500 hover:underline flex items-center justify-center">
+                  Don't have an account?{' '} Sign Up
+                </Link>
+              </p>
+            </div>
           </form>
-        </div>
-        <div className="absolute w-full h-full top-0 left-1/2 bg-gradient-to-r from-purple-600 to-purple-700 text-white flex items-center justify-around transform transition-transform duration-700 ease-in-out">
-          <div className={`w-2/4 p-8 text-center transform transition-transform duration-700 ease-in-out ${isSignUp ? 'transform translate-x-0' : 'transform -translate-x-full'}`}>
-            <h1 className="text-2xl font-bold">Welcome Back!</h1>
-            <p className="mt-2">Enter your personal details to use all of site features</p>
-            <button className="mt-4 py-2 px-4 bg-white text-purple-600 rounded-md" onClick={toggleSignUp}>Sign In</button>
-          </div>
-          <div className={`w-2/4 p-8 text-center transform transition-transform duration-700 ease-in-out ${isSignUp ? 'transform translate-x-full' : 'transform translate-x-0'}`}>
-            <h1 className="text-2xl font-bold">Hello, Friend!</h1>
-            <p className="mt-2">Register with your personal details to use all of site features</p>
-            <button className="mt-4 py-2 px-4 bg-white text-purple-600 rounded-md" onClick={toggleSignUp}>Sign Up</button>
+          {/* Back Button */}
+          <div className="mt-6 flex justify-center">
+            <button
+              onClick={handleGoBack}
+              className="w-full bg-gray-300 text-gray-800 py-2 rounded-lg shadow-lg hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-colors"
+            >
+              Go Back
+            </button>
           </div>
         </div>
       </div>

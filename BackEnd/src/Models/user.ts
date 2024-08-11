@@ -19,12 +19,19 @@ export interface IUser {
   updatedAt: Date;
   passwordResetToken?: string;
   passwordResetExpires?: Date;
+  otp: string;
+  otpExpires: Date;
+  emailVerified: boolean;
+  profileCompleted: boolean;
 }
 
 // Define User Model Interface
 export interface IUserModel extends IUser, Document {
   comparePassword(password: string): Promise<boolean>;
   createPasswordResetToken(): Promise<string>;
+  createOTP(): Promise<string>;
+  verifyOTP(otp: string): boolean;
+  _id: mongoose.Schema.Types.ObjectId;
 }
 
 // Define User Schema
@@ -32,7 +39,6 @@ const userSchema: Schema<IUserModel> = new Schema(
   {
     name: {
       type: String,
-      required: true,
     },
     email: {
       type: String,
@@ -41,12 +47,10 @@ const userSchema: Schema<IUserModel> = new Schema(
     },
     password: {
       type: String,
-      required: true,
     },
     role: {
       type: String,
       enum: userRole,
-      required: true,
     },
     bio: {
       type: String,
@@ -61,6 +65,22 @@ const userSchema: Schema<IUserModel> = new Schema(
     },
     passwordResetExpires: {
       type: Date,
+    },
+    otp: {
+      type: String, // OTP field
+    },
+    otpExpires: {
+      type: Date, // OTP expiration field
+    },
+    emailVerified: {
+      type: Boolean,
+      default: false,
+      required: true,
+    },
+    profileCompleted: {
+      type: Boolean,
+      default: false,
+      required: true,
     },
   },
   {
@@ -96,6 +116,14 @@ userSchema.methods.createPasswordResetToken =
     user.passwordResetExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
     return resetToken;
   };
+
+// Method to verify OTP
+userSchema.methods.verifyOTP = function (otp: string): boolean | undefined {
+  const user = this as IUserModel;
+  const isValid =
+    user.otp === otp && user.otpExpires && user.otpExpires > new Date();
+  return isValid;
+};
 
 // Define and export User model
 export const User = mongoose.model<IUserModel>("User", userSchema);
