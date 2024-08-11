@@ -1,4 +1,4 @@
-// import React from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 
 const LNavbar = () => {
@@ -12,7 +12,7 @@ const LNavbar = () => {
             className="h-18 w-24"
           />
         </Link>
-        <nav className="flex-1 flex items-center justify-center space-x-16 text-lg font-medium">
+        <nav className="hidden md:flex flex-1 items-center justify-center space-x-16 text-lg font-medium">
           <a
             href="#hero"
             className="hover:text-blue-600 transition-colors"
@@ -38,6 +38,17 @@ const LNavbar = () => {
             Contact Us
           </a>
         </nav>
+        <button className="md:hidden flex items-center text-gray-600 hover:text-blue-600">
+          <svg
+            className="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7" />
+          </svg>
+        </button>
         <Link
           to="/login"
           className="bg-blue-600 text-white px-4 py-2 mr-8 rounded-lg hover:bg-blue-700 transition-colors"

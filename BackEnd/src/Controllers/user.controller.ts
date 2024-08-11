@@ -9,7 +9,7 @@ import {
   SignUpResponseBodyType,
 } from "../Schemas/user.schema";
 import { GenericResponseType } from "../Schemas/genericResponse.schema";
-import { sendOTPEmail } from "../Configurations/emailServices";
+import { sendOTPEmail } from "../Configurations/sendOtpMail";
 
 const sendOtp = async (req: Request, res: Response) => {
   try {
@@ -106,6 +106,7 @@ const verifyOtp = async (req: Request, res: Response) => {
   }
 };
 
+// FIXME: update the addUser fuction according to the otp config ;
 const addUser = async (
   req: Request<
     any,
@@ -122,13 +123,6 @@ const addUser = async (
     if (!name || !email || !password || !role || !bio) {
       return res.status(400).json({
         message: "All the fields are required.",
-        success: false,
-      });
-    }
-
-    if (!validator.isEmail(email)) {
-      return res.status(400).json({
-        message: "Email is not valid.",
         success: false,
       });
     }
