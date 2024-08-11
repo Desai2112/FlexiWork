@@ -1,4 +1,4 @@
-// import { useState } from 'react';
+import { Route } from 'react-router-dom';
 import Navbar from './components/Freelancer/Navbar';
 import Footer from './components/Freelancer/Footer';
 import MultiStepForm from './components/MultiStepForm';
@@ -8,10 +8,10 @@ function App() {
 
   return (
     <>
-      <Navbar />
+      {/* <Navbar /> */}
       <Login />
       {/* <MultiStepForm /> */}
-      <Footer />
+      {/* <Footer /> */}
     </>
   )
 }

@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+
 .input {
     width: 100%;
     padding: 0.5rem;
