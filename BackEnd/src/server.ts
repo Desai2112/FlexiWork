@@ -4,6 +4,7 @@ import session from "express-session";
 import dotenv from "dotenv";
 import bodyParser from "body-parser";
 import "./index.d.ts";
+import cors from "cors";
 
 dotenv.config();
 
@@ -39,6 +40,13 @@ app.use(
       autoRemove: "interval",
       autoRemoveInterval: 1,
     }),
+  }),
+);
+
+app.use(
+  cors({
+    origin: process.env.CORS_ORIGIN,
+    credentials: true,
   }),
 );
 

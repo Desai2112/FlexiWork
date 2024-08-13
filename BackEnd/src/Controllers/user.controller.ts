@@ -10,10 +10,13 @@ import {
 } from "../Schemas/user.schema";
 import { GenericResponseType } from "../Schemas/genericResponse.schema";
 import { sendOTPEmail } from "../Configurations/sendOtpMail";
+import { Verification } from "../Models/verification";
+import Skill from "../Models/skills";
+import bcrypt from "bcrypt";
 
 const sendOtp = async (req: Request, res: Response) => {
   try {
-    const { email } = req.body;
+    const { email, role } = req.body;
 
     if (!validator.isEmail(email)) {
       return res.status(400).json({
@@ -29,27 +32,29 @@ const sendOtp = async (req: Request, res: Response) => {
       });
     }
     const user = await User.findOne({ email: email });
-    if (user && user.emailVerified) {
+    if (user) {
       return res.status(409).json({
         success: false,
-        message: "User already verified",
-      });
-    } else if (user) {
-      return res.status(400).json({
-        message: "Email already sent.",
-        success: false,
+        message: "User already exists",
       });
     }
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     const otpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
-
-    await User.create({
-      email: email,
-      otp: otp,
-      otpExpires: otpExpires,
-    });
-
+    const existingVerification = await Verification.findOne({ email: email });
+    if (existingVerification) {
+      await existingVerification.updateOne({
+        otp: otp,
+        otpExpires: otpExpires,
+      });
+    } else {
+      await Verification.create({
+        email: email.toLowerCase(),
+        role: role,
+        otp: otp,
+        otpExpires: otpExpires,
+      });
+    }
     await sendOTPEmail(email, otp);
     return res.status(200).json({
       message: "OTP send successfully to your email.",
@@ -67,6 +72,7 @@ const sendOtp = async (req: Request, res: Response) => {
 const verifyOtp = async (req: Request, res: Response) => {
   try {
     const { email, otp } = req.body;
+    console.log(req.body);
 
     if (!email || !otp) {
       return res.status(400).json({
@@ -74,7 +80,7 @@ const verifyOtp = async (req: Request, res: Response) => {
         success: false,
       });
     }
-    const user = await User.findOne({ email: email });
+    const user = await Verification.findOne({ email: email });
     if (!user) {
       return res.status(404).json({
         message: "User not found",
@@ -85,7 +91,12 @@ const verifyOtp = async (req: Request, res: Response) => {
 
       if (verified) {
         user.emailVerified = true;
-        await user.save();
+        await User.create({
+          email: user.email,
+          role: user.role,
+          emailVerified: true,
+        });
+        await Verification.deleteOne({ email: email });
         return res.status(200).json({
           message: "OTP is verified.",
           success: true,
@@ -106,69 +117,67 @@ const verifyOtp = async (req: Request, res: Response) => {
   }
 };
 
-// FIXME: update the addUser fuction according to the otp config ;
-const addUser = async (
-  req: Request<
-    any,
-    SignUpResponseBodyType | GenericResponseType,
-    SignUpBodyType
-  >,
-  res: Response<SignUpResponseBodyType | GenericResponseType>,
-  next: NextFunction,
-) => {
+const addUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    console.log(req.body);
-    const { name, email, password, role, bio } = req.body;
+    const { name, email, role, password, mobileNo, companyName, skills, bio } =
+      req.body;
 
-    if (!name || !email || !password || !role || !bio) {
+    // Validate required fields
+    if (!name || !password || !bio || !email || !mobileNo || !role) {
       return res.status(400).json({
         message: "All the fields are required.",
         success: false,
       });
     }
 
+    // Validate role-specific fields
+    if (role === "freelancer" && !skills) {
+      return res.status(400).json({
+        message: "Skills are required for freelancer.",
+        success: false,
+      });
+    } else if (role === "client" && !companyName) {
+      return res.status(400).json({
+        message: "Company name is required for client.",
+        success: false,
+      });
+    }
+
+    // Validate password length
     if (!validator.isLength(password, { min: 10 })) {
       return res.status(400).json({
         message: "Password must be at least 10 characters long.",
         success: false,
       });
     }
+    let hpassword = await bcrypt.hash(password, 10);
+    // Prepare data for update or creation
+    const updateData: any = {
+      name,
+      password: hpassword,
+      mobileNo,
+      bio,
+      profileCompleted: true,
+      ...(role === "client" ? { companyName } : { skills }),
+    };
 
-    const existingUserEmail = await User.findOne({ email });
-    if (existingUserEmail) {
-      return res.status(400).json({
-        message: "Email already exists.",
-        success: false,
-      });
-    }
-
-    const newUser = new User({
-      name: name,
-      email: email,
-      password: password,
-      role: role,
-      bio: bio,
+    // Find and update or create user
+    const user = await User.findOneAndUpdate({ email }, updateData, {
+      new: true,
+      upsert: true,
     });
 
-    await newUser.save();
-
-    res.status(201).json({
-      message: "User created successfully.",
-      userDetails: {
-        id: newUser._id,
-        name: newUser.name,
-        email: newUser.email,
-        role: newUser.role,
-        bio: newUser.bio || "",
-        createdAt: newUser.createdAt,
-        updatedAt: newUser.updatedAt,
-      },
+    req.session.user = user._id;
+    return res.status(200).json({
+      message: "User created or updated successfully.",
       success: true,
     });
   } catch (error) {
-    return res
-      .status(500)
-      .json({ message: "Internal Server Error", success: false });
+    console.error(error); // Log the error for debugging
+    return res.status(500).json({
+      message: "Internal Server Error",
+      success: false,
+    });
   }
 };
 
@@ -192,7 +201,7 @@ const loginUser = async (
     if (!user) {
       return res.status(400).json({
         success: false,
-        message: "Invalid email or password.",
+        message: "Invalid email.",
       });
     }
 
@@ -200,7 +209,7 @@ const loginUser = async (
     if (!isMatch) {
       return res.status(400).json({
         success: false,
-        message: "Invalid email or password.",
+        message: "Invalid password.",
       });
     }
 
@@ -209,13 +218,8 @@ const loginUser = async (
     res.status(200).json({
       message: "Login successful.",
       userDetails: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
         role: user.role,
-        bio: user.bio || "",
-        createdAt: user.createdAt,
-        updatedAt: user.updatedAt,
+        profileCompleted: user.profileCompleted,
       },
       success: true,
     });
@@ -270,4 +274,32 @@ const logOut = async (
   }
 };
 
-export { addUser, loginUser, getDetails, logOut, sendOtp, verifyOtp };
+const getAllSiklls = async (req: Request, res: Response) => {
+  try {
+    const skills = await Skill.find();
+    if (!skills) {
+      return res.status(404).json({
+        message: "No skills found",
+        success: false,
+      });
+    }
+    return res.status(200).json({
+      message: "Skills found",
+      skills,
+      success: true,
+    });
+  } catch (error) {
+    console.error("Error fetching skills:", error);
+    res.status(500).send({ message: "Internal Server Error", success: false });
+  }
+};
+
+export {
+  addUser,
+  loginUser,
+  getDetails,
+  logOut,
+  sendOtp,
+  verifyOtp,
+  getAllSiklls,
+};

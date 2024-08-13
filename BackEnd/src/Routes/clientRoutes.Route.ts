@@ -1,6 +1,6 @@
 import { Router } from "express";
 import {
-  addProject,
+  // addProject,
   listAllProjects,
   deleteProject,
 } from "../Controllers/client.controller";
@@ -14,13 +14,13 @@ import { GenericResponseType } from "../Schemas/genericResponse.schema";
 
 const router = Router();
 
-router
-  .route("/add")
-  .post<
-    any,
-    AddProjectResponseBody | GenericResponseType,
-    AddProjectRequestBody
-  >(isAuthenticated, isClient, addProject);
+// router
+//   .route("/add")
+//   .post<
+//     any,
+//     AddProjectResponseBody | GenericResponseType,
+//     AddProjectRequestBody
+//   >(isAuthenticated, isClient, addProject);
 router.route("/listall").get(isAuthenticated, isClient, listAllProjects);
 router.route("/delete").delete(isAuthenticated, isClient, deleteProject);
 

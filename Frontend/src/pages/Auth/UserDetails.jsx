@@ -1,53 +1,99 @@
-import { useState,useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import Select from "react-select";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
+import axios from 'axios';
 
 const UserDetails = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
 
-  // Retrieve email and role from state
-  const email = state?.email || '';
-  const role = state?.role || '';
+  const email = state?.email || "";
+  const role = state?.role || "";
 
-  const [name, setName] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [mobileNo, setMobileNo] = useState('');
-  const [companyName, setCompanyName] = useState('');
-  const [skills, setSkills] = useState('');
-  const [bio, setBio] = useState('');
+  const [name, setName] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [mobileNo, setMobileNo] = useState("");
+  const [companyName, setCompanyName] = useState("");
+  const [skillsOptions, setSkillsOptions] = useState([]); // Dynamic options state
+  const [selectedSkills, setSelectedSkills] = useState([]);
+  const [bio, setBio] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  useEffect(() => {
+    // Fetch skills data from the backend
+    if (role !== "client") {
+      fetch("http://localhost:5000/user/get-all-skills")
+        .then((response) => response.json())
+        .then((data) => {
+          if (Array.isArray(data.skills)) {
+            const options = data.skills.map((skill) => ({
+              value: skill._id,
+              label: skill.skill,
+            }));
+            setSkillsOptions(options);
+          } else {
+            console.error("Unexpected data format:", data);
+            toast.error("Unexpected data format received.");
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching skills:", error);
+          toast.error("Failed to load skills.");
+        });
+    }
+  }, [role]);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
-    // Simple validation
     if (password !== confirmPassword) {
-      toast.error('Passwords do not match.');
+      toast.error("Passwords do not match.");
       setLoading(false);
       return;
     }
 
-    // Perform form submission logic here
+    const userDetails = {
+      name,
+      email,
+      role,
+      password, // Include password in the request
+      mobileNo,
+      companyName,
+      skills: selectedSkills.map((skill) => skill.value),
+      bio,
+    };
 
-    setLoading(false);
-    toast.success('User details saved successfully.');
+    try {
+      // Make the signup request
+      const response = await axios.post('http://localhost:5000/user/signup', userDetails);
+      
+      if (response.status === 200) {
+        toast.success("User details saved successfully.");
+        // Redirect to a different page if needed
+        navigate(`/${role}`); // Replace '/success' with your actual route
+      }
+    } catch (error) {
+      console.error("Error during signup:", error);
+      toast.error("Failed to save user details. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
     if (!email || !role) {
-      navigate('/signup'); 
+      navigate("/signup");
     }
   }, [email, role, navigate]);
 
   return (
     <div className="flex min-h-screen">
-      {/* Fixed Image Section */}
       <div className="hidden md:flex md:w-1/2 bg-gray-200">
         <img
           src="https://res.cloudinary.com/dgvslio7u/image/upload/v1723302697/gzx6czd1vjihamz8yykt.png"
@@ -56,10 +102,11 @@ const UserDetails = () => {
         />
       </div>
 
-      {/* Scrollable Form Section */}
       <div className="w-full md:w-1/2 overflow-y-auto bg-white p-4 md:p-8">
         <div className="w-full max-w-md mx-auto">
-          <h1 className="text-2xl font-semibold mb-4 text-gray-800 text-center">User Details</h1>
+          <h1 className="text-2xl font-semibold mb-4 text-gray-800 text-center">
+            User Details
+          </h1>
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label className="block text-gray-700 mb-1">Name</label>
@@ -93,7 +140,7 @@ const UserDetails = () => {
               <label className="block text-gray-700 mb-1">Password</label>
               <div className="relative">
                 <input
-                  type={showPassword ? 'text' : 'password'}
+                  type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="border border-gray-300 rounded-lg px-4 py-2 w-full"
@@ -115,7 +162,7 @@ const UserDetails = () => {
             <div>
               <label className="block text-gray-700 mb-1">Confirm Password</label>
               <input
-                type={showPassword ? 'text' : 'password'}
+                type={showPassword ? "text" : "password"}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 className="border border-gray-300 rounded-lg px-4 py-2 w-full"
@@ -132,7 +179,7 @@ const UserDetails = () => {
                 required
               />
             </div>
-            {role === 'client' && (
+            {role === "client" && (
               <div>
                 <label className="block text-gray-700 mb-1">Company Name</label>
                 <input
@@ -143,15 +190,20 @@ const UserDetails = () => {
                 />
               </div>
             )}
-            <div>
-              <label className="block text-gray-700 mb-1">Skills</label>
-              <input
-                type="text"
-                value={skills}
-                onChange={(e) => setSkills(e.target.value)}
-                className="border border-gray-300 rounded-lg px-4 py-2 w-full"
-              />
-            </div>
+            {role !== "client" && (
+              <div>
+                <label className="block text-gray-700 mb-1">Skills</label>
+                <Select
+                  isMulti
+                  value={selectedSkills}
+                  onChange={setSelectedSkills}
+                  options={skillsOptions}
+                  className="w-full"
+                  classNamePrefix="select"
+                  placeholder="Select your skills"
+                />
+              </div>
+            )}
             <div>
               <label className="block text-gray-700 mb-1">Bio</label>
               <textarea
@@ -166,13 +218,12 @@ const UserDetails = () => {
               className="w-full bg-blue-500 text-white py-2 rounded-lg shadow hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
               disabled={loading}
             >
-              {loading ? 'Saving...' : 'Save Details'}
+              {loading ? "Saving..." : "Save Details"}
             </button>
           </form>
         </div>
       </div>
 
-      {/* Toast Container */}
       <ToastContainer />
     </div>
   );

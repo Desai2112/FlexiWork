@@ -1,14 +1,14 @@
 import mongoose, { Schema, Document } from "mongoose";
 
-export type ITag = {
-  tagName: string;
+export type ISkill = {
+  skill: string;
   description: string;
   _id: Schema.Types.ObjectId;
 };
 
-export const tagSchema: Schema<ITag> = new Schema(
+export const skillSchema: Schema<ISkill> = new Schema(
   {
-    tagName: {
+    skill: {
       type: String,
       required: true,
       trim: true,
@@ -25,4 +25,6 @@ export const tagSchema: Schema<ITag> = new Schema(
   },
 );
 
-export const Tag = mongoose.model<ITag>("Tag", tagSchema);
+export const Skill = mongoose.model<ISkill>("Skill", skillSchema);
+
+export default Skill;

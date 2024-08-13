@@ -1,6 +1,6 @@
 import { Date, Schema } from "mongoose";
 import { IProject, ProjectStatus } from "../Models/projects";
-import { ITag } from "../Models/tags";
+// import { ITag } from "../Models/skills";
 import { IProjectTag } from "../Models/projecttags";
 
 export type searchByTagsRequestBodyType = {

@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   addUser,
+  getAllSiklls,
   getDetails,
   loginUser,
   logOut,
@@ -36,5 +37,6 @@ router
   .get<any, MeResponseBodyType | GenericResponseType>(getDetails);
 
 router.route("/logout").delete<any, GenericResponseType>(logOut);
+router.route("/get-all-skills").get(getAllSiklls);
 
 export default router;

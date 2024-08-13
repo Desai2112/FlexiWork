@@ -1,7 +1,9 @@
-import { useState,useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { toast, ToastContainer } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Swal from 'sweetalert2';
+import axios from 'axios';
 
 const VerifyOtp = () => {
   const { state } = useLocation();
@@ -12,7 +14,8 @@ const VerifyOtp = () => {
   const role = state?.role || 'client';
 
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
-  const [loading, setLoading] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(30); // Timer for 30 seconds
+  const [canResend, setCanResend] = useState(false); // State to track if Resend OTP is enabled
 
   // Function to handle OTP input change
   const handleOtpChange = (e, index) => {
@@ -32,7 +35,7 @@ const VerifyOtp = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     // Check if all OTP fields are filled
@@ -41,26 +44,57 @@ const VerifyOtp = () => {
       return;
     }
 
-    setLoading(true);
+    // Combine OTP digits into a single string
+    const otpString = otp.join('');
 
-    // Simulate OTP verification process
-    setTimeout(() => {
-      setLoading(false);
-      // Simulate a successful verification
-      if (email && role) {
-        toast.success('OTP verified successfully! Redirecting to user details.');
-        navigate('/user-details', { state: { email, role } });
-      } else {
-        toast.error('Error verifying OTP. Please try again.');
+    try {
+      // Send combined OTP to the backend
+      const response = await axios.post('http://localhost:5000/user/verify-otp', { email, role, otp: otpString });
+      
+      if (response.status === 200) {
+        Swal.fire({
+          title: "OTP Verified",
+          text: "OTP verified successfully! Redirecting to user details.",
+          icon: "success",
+          showConfirmButton: false,
+          timer: 2000, // Auto close the alert after 2 seconds
+        });
+
+        setTimeout(() => {
+          navigate('/user-details', { state: { email, role } });
+        }, 2000); // Delay navigation by 2 seconds to match SweetAlert timing
       }
-    }, 2000); // Simulate a delay for the verification
+    } catch (error) {
+      toast.error('Error verifying OTP. Please try again.');
+    }
+  };
+
+  const handleResendOtp = async () => {
+    try {
+      // Make axios request to resend OTP
+      await axios.post('http://localhost:5000/user/send-otp', { email, role });
+      toast.success('OTP resent successfully!');
+      setTimeLeft(30);
+      setCanResend(false);
+    } catch (error) {
+      toast.error('Error resending OTP. Please try again.');
+    }
   };
 
   useEffect(() => {
     if (!email || !role) {
-      navigate('/signup'); 
+      navigate('/signup');
     }
-  }, [email, role, navigate]);
+
+    // Timer countdown
+    if (timeLeft > 0) {
+      const timerId = setInterval(() => setTimeLeft(prev => prev - 1), 1000);
+      return () => clearInterval(timerId);
+    } else {
+      setCanResend(true); // Enable the "Resend OTP" link
+    }
+  }, [timeLeft, email, role, navigate]);
+
   return (
     <div className="flex flex-col md:flex-row min-h-screen">
       {/* Image Section */}
@@ -95,17 +129,22 @@ const VerifyOtp = () => {
             <button
               type="submit"
               className="w-full bg-blue-500 text-white py-2 rounded-lg shadow hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
-              disabled={loading}
             >
-              {loading ? 'Verifying...' : 'Verify OTP'}
+              Verify OTP
             </button>
             <div className="mt-4 text-center">
-              <p className="text-gray-600">
-                Didn't receive the OTP?{' '}
-                <a href="#" className="text-blue-500 hover:underline">
+              {canResend ? (
+                <button
+                  onClick={handleResendOtp}
+                  className="text-blue-500 hover:underline"
+                >
                   Resend OTP
-                </a>
-              </p>
+                </button>
+              ) : (
+                <p className="text-gray-600">
+                  Resend OTP available in {timeLeft} seconds
+                </p>
+              )}
             </div>
           </form>
         </div>

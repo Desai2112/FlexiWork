@@ -14,13 +14,8 @@ export type SignUpBodyType = {
 export type loginResponseBodyType = {
   message: string;
   userDetails: {
-    id: Schema.Types.ObjectId;
-    name: string;
-    email: string;
     role: userRole;
-    bio: string;
-    createdAt: Date;
-    updatedAt: Date;
+    profileCompleted: boolean;
   };
   success: Boolean;
 };
