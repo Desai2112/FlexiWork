@@ -1,7 +1,7 @@
 // import React from 'react'
 import { FaInstagram } from "react-icons/fa";
 import { FaFacebook } from "react-icons/fa";
-import { FaTwitter } from "react-icons/fa";
+import { FaLinkedinIn } from "react-icons/fa";
 
 const Footer = () => {
   return (
@@ -89,7 +89,7 @@ const Footer = () => {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <FaTwitter size={24} />
+                <FaLinkedinIn size={24} />
               </a>
               <a
                 href="https://www.instagram.com"

@@ -24,7 +24,7 @@ const SignUp = () => {
     }
     // Send request to server
     axios
-      .post("http://localhost:5000/user/send-otp", { email, role })
+      .post("http://localhost:5000/auth/send-otp", { email, role })
       .then(() => {
         toast.success("OTP has been sent to your email.", {
           duration: 2000, // Auto close the alert after 3 seconds

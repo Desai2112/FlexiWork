@@ -13,6 +13,7 @@ import { sendOTPEmail } from "../Configurations/sendOtpMail";
 import { Verification } from "../Models/verification";
 import Skill from "../Models/skills";
 import bcrypt from "bcrypt";
+import { sendPasswordResetEmail } from "../Configurations/sendResetPass";
 
 const sendOtp = async (req: Request, res: Response) => {
   try {
@@ -294,6 +295,81 @@ const getAllSiklls = async (req: Request, res: Response) => {
   }
 };
 
+const resetPasswordEmail = async (req: Request, res: Response) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({
+        message: "Email is required",
+        success: false,
+      });
+    }
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+        success: false,
+      });
+    }
+    const passwordResetToken = await user.createPasswordResetToken();
+    await user.save();
+
+    const resetLink = `${process.env.FRONTEND_URL}/reset-password/${passwordResetToken}`;
+
+    await sendPasswordResetEmail(email, resetLink);
+    return res.status(200).json({
+      message: "Password reset email sent successfully",
+      success: true,
+    });
+  } catch (error) {
+    console.log("Error Accured: ", error);
+    return res.status(500).json({
+      message: "Internal Server Error",
+      success: false,
+    });
+  }
+};
+
+const resetPassword = async (req: Request, res: Response) => {
+  try {
+    const { token, password } = req.body;
+    if (!token || !password) {
+      return res.status(400).json({
+        message: "Token and password are required",
+        success: false,
+      });
+    }
+    try {
+      const user = await User.findOne({ passwordResetToken: token });
+      if (!user) {
+        return res.status(404).json({
+          message: "User not found",
+          success: false,
+        });
+      }
+      user.password = password;
+      user.passwordResetToken = undefined;
+      user.passwordResetExpires = undefined;
+      await user.save();
+      return res.status(200).json({
+        message: "Password reset successfully",
+        success: true,
+      });
+    } catch (error) {
+      return res.status(404).json({
+        message: "User not found",
+        success: false,
+      });
+    }
+  } catch (error) {
+    console.log("Error Accured: ", error);
+    return res.status(500).json({
+      message: "Internal Server Error",
+      success: false,
+    });
+  }
+};
+
 export {
   addUser,
   loginUser,
@@ -302,4 +378,6 @@ export {
   sendOtp,
   verifyOtp,
   getAllSiklls,
+  resetPasswordEmail,
+  resetPassword,
 };

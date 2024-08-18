@@ -5,9 +5,11 @@ import {
   getDetails,
   loginUser,
   logOut,
+  resetPassword,
+  resetPasswordEmail,
   sendOtp,
   verifyOtp,
-} from "../Controllers/user.controller";
+} from "../Controllers/auth.controller";
 import {
   loginBodyType,
   SignUpBodyType,
@@ -38,5 +40,7 @@ router
 
 router.route("/logout").delete<any, GenericResponseType>(logOut);
 router.route("/get-all-skills").get(getAllSiklls);
+router.route("/send-reset-link").post(resetPasswordEmail);
+router.route("/reset-password").post(resetPassword);
 
 export default router;

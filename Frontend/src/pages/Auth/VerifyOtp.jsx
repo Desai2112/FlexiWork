@@ -49,7 +49,7 @@ const VerifyOtp = () => {
 
     try {
       // Send combined OTP to the backend
-      const response = await axios.post('http://localhost:5000/user/verify-otp', { email, role, otp: otpString });
+      const response = await axios.post('http://localhost:5000/auth/verify-otp', { email, role, otp: otpString });
       
       if (response.status === 200) {
         Swal.fire({
@@ -72,7 +72,7 @@ const VerifyOtp = () => {
   const handleResendOtp = async () => {
     try {
       // Make axios request to resend OTP
-      await axios.post('http://localhost:5000/user/send-otp', { email, role });
+      await axios.post('http://localhost:5000/auth/send-otp', { email, role });
       toast.success('OTP resent successfully!');
       setTimeLeft(30);
       setCanResend(false);

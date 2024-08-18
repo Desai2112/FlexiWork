@@ -27,7 +27,7 @@ const UserDetails = () => {
   useEffect(() => {
     // Fetch skills data from the backend
     if (role !== "client") {
-      fetch("http://localhost:5000/user/get-all-skills")
+      fetch("http://localhost:5000/auth/get-all-skills")
         .then((response) => response.json())
         .then((data) => {
           if (Array.isArray(data.skills)) {
@@ -71,7 +71,7 @@ const UserDetails = () => {
 
     try {
       // Make the signup request
-      const response = await axios.post('http://localhost:5000/user/signup', userDetails);
+      const response = await axios.post('http://localhost:5000/auth/signup', userDetails);
       
       if (response.status === 200) {
         toast.success("User details saved successfully.");

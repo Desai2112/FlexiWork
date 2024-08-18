@@ -9,7 +9,7 @@ import {
   deleteProjectResponseBody,
   ListAllProjectResponseBody,
 } from "../Schemas/client.schema";
-import { ProjectTag } from "../Models/projecttags";
+// import { ProjectTag } from "../Models/projecttags";
 import { GenericResponseType } from "../Schemas/genericResponse.schema";
 
 // const addProject = async (

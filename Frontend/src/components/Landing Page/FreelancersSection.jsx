@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 // import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
@@ -31,32 +32,37 @@ const freelancers = [
   // Add more freelancer data as needed
 ];
 
+
+const FreelancerCard = ({ freelancer }) => (
+  <div className="flex flex-col items-center bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+    <div className="relative w-32 h-32 flex-shrink-0 overflow-hidden rounded-full border-4 border-blue-600 mb-4">
+      <img className="h-full w-full object-cover" src={freelancer.image} alt={freelancer.name} />
+    </div>
+    <div className="text-center">
+      <h3 className="text-xl font-semibold text-gray-900 mb-1">{freelancer.name}</h3>
+      <p className="text-sm text-gray-700 mb-2">{freelancer.role}</p>
+      <p className="text-gray-600 text-sm">{freelancer.description}</p>
+    </div>
+    <div className="flex items-center justify-center space-x-2 mt-4">
+      <FontAwesomeIcon icon={faStar} className="text-yellow-500 text-sm" />
+      <span className="text-sm font-medium text-gray-900">{freelancer.rating}</span>
+      <span className="text-sm text-gray-500">({freelancer.reviews} reviews)</span>
+    </div>
+  </div>
+);
+
 const FreelancersSection = () => (
-  <section className="w-full py-12 md:py-24 lg:py-16 bg-gradient-to-r from-blue-50 to-white">
-    <div className="container px-4 md:px-6">
+  <section className="w-full py-12 md:py-24 lg:py-32 bg-gradient-to-r from-blue-50 to-white">
+    <div className="container mx-auto px-4 md:px-6">
       <div className="text-center mb-12">
-        <h2 className="text-3xl font-bold text-gray-900 mt-4">Meet Our Talented Freelancers</h2>
-        <p className="max-w-4xl mx-auto text-gray-600 mt-4 text-lg">
-          Our top-rated freelancers are ready to help you achieve your goals with their exceptional skills and expertise.
+        <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 leading-tight mb-4">Meet Our Talented Freelancers</h2>
+        <p className="max-w-3xl mx-auto text-gray-700 mt-4 text-base md:text-lg">
+          Our top-rated freelancers are ready to help you achieve your goals with their exceptional skills and expertise. Explore their profiles and find the perfect match for your project.
         </p>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
         {freelancers.map((freelancer, index) => (
-          <div key={index} className="flex flex-col items-center bg-white p-4 rounded-lg shadow-lg">
-            <div className="relative w-24 h-24 flex-shrink-0 overflow-hidden rounded-full border-4 border-blue-500 mb-4">
-              <img className="h-full w-full object-cover" src={freelancer.image} alt={freelancer.name} />
-            </div>
-            <div className="text-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-900 mb-1">{freelancer.name}</h3>
-              <p className="text-xs text-gray-600 mb-2">{freelancer.role}</p>
-              <p className="text-gray-500 text-xs">{freelancer.description}</p>
-            </div>
-            <div className="flex items-center justify-center space-x-1">
-              <FontAwesomeIcon icon={faStar} className="text-yellow-500 text-sm" />
-              <span className="text-xs font-medium text-gray-900">{freelancer.rating}</span>
-              <span className="text-xs text-gray-500">({freelancer.reviews} reviews)</span>
-            </div>
-          </div>
+          <FreelancerCard key={index} freelancer={freelancer} />
         ))}
       </div>
     </div>

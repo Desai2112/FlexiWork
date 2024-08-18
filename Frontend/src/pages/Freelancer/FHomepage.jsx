@@ -1,9 +1,14 @@
-
+import Navbar from "../../components/Freelancer/Navbar";
+import Footer from "../../components/Freelancer/Footer";
 
 const FHomepage = () => {
   return (
-    <div>Freelancer Homepage</div>
-  )
-}
+    <>
+      <Navbar />
+      <div>Freelancer Homepage</div>
+      <Footer />
+    </>
+  );
+};
 
-export default FHomepage
+export default FHomepage;
