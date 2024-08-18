@@ -53,6 +53,7 @@ app.use(
 //Routes import
 import authRoutes from "./Routes/authRoutes.Route";
 import clientRoutes from "./Routes/clientRoutes.Route";
+import userProfileRoutes from "./Routes/userProfileRoutes.Route";
 // import freelancerRoutes from "./Routes/freelancerRoutes.Route";
 import MongoStore from "connect-mongo";
 import mongoose from "mongoose";
@@ -60,4 +61,6 @@ import mongoose from "mongoose";
 //Routes declaration
 app.use("/auth", authRoutes);
 app.use("/client", clientRoutes);
+app.use("/user", userProfileRoutes);
+
 // app.use("/freelancer", freelancerRoutes);
