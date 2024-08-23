@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { UserPortfolio } from "../Models/userPortfolio";
-import User from "../Models/user";
+import { UserPortfolio } from "../Models/userPortfolio.model";
+import User from "../Models/user.model";
 
 const addProject = async (req: Request, res: Response) => {
   try {

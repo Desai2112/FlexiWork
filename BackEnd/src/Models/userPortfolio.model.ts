@@ -23,6 +23,7 @@ export interface IUserPortfolio {
   userId: mongoose.Schema.Types.ObjectId;
   projects: IProjectDetails[];
   socialMediaLinks: ISocialMediaLinks;
+  moneyEarned: Number;
 }
 
 // Define interface for the model
@@ -61,7 +62,7 @@ const projectDetailsSchema: Schema<IProjectDetails> = new Schema(
     },
   },
   { _id: false },
-); // Disable _id field for subdocument
+);
 
 // Define the main schema
 const userPortfolioSchema: Schema<IUserPortfolioModel> = new Schema(
@@ -71,7 +72,8 @@ const userPortfolioSchema: Schema<IUserPortfolioModel> = new Schema(
       required: true,
       ref: "User",
     },
-    projects: [projectDetailsSchema], // Store projects as an array of subdocuments
+
+    projects: [projectDetailsSchema],
     socialMediaLinks: {
       linkedin: {
         type: String,
@@ -90,10 +92,15 @@ const userPortfolioSchema: Schema<IUserPortfolioModel> = new Schema(
         trim: true,
       },
     },
+    moneyEarned: {
+      type: Number,
+      default: 0,
+      required: true,
+    },
   },
   {
-    timestamps: true, // Automatically add createdAt and updatedAt fields
-    versionKey: false, // Disable version key (__v) field
+    timestamps: true,
+    versionKey: false,
   },
 );
 

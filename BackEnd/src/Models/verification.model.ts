@@ -1,5 +1,5 @@
 import mongoose, { Document, Schema } from "mongoose";
-import { userRole } from "./user";
+import { userRole } from "./user.model";
 
 export interface Iverification {
   email: string;

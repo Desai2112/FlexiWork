@@ -1,26 +1,31 @@
 import mongoose, { Document, Schema } from "mongoose";
 
-export enum ProjectStatus {
+export enum JobStatus {
   Completed = "completed",
-  Running = "running",
-  Pending = "pending",
+  Assigned = "assigned",
+  New = "new",
 }
 
-export type IProject = {
+export interface IJob {
   projectName: string;
   description: string;
-  status: ProjectStatus;
+  status: JobStatus;
   updatedAt: Date;
   createdAt: Date;
-  completed: boolean;
-  minPrice: number;
+  expectedTime: number;
   maxPrice: number;
+  bidDuration: number;
   ClientId: mongoose.Types.ObjectId;
+  requiredSkills: mongoose.Types.ObjectId[];
   deleted: boolean;
   _id: Schema.Types.ObjectId;
-};
+}
 
-export const projectSchema: Schema<IProject> = new Schema(
+export interface IJobModel extends IJob, Document {
+  _id: mongoose.Schema.Types.ObjectId;
+}
+
+export const jobSchema: Schema<IJob> = new Schema(
   {
     projectName: {
       type: String,
@@ -32,24 +37,29 @@ export const projectSchema: Schema<IProject> = new Schema(
     },
     status: {
       type: String,
-      enum: ProjectStatus,
+      enum: JobStatus,
       required: true,
-      default: ProjectStatus.Pending,
-    },
-    completed: {
-      type: Boolean,
-      default: false,
+      default: JobStatus.New,
     },
     deleted: {
       type: Boolean,
       default: false,
     },
-    minPrice: {
+    maxPrice: {
       type: Number,
       required: true,
     },
-    maxPrice: {
+    expectedTime: {
       type: Number,
+      required: true,
+    },
+    bidDuration: {
+      type: Number,
+      required: true,
+    },
+    requiredSkills: {
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: "Skill",
       required: true,
     },
     ClientId: {
@@ -64,4 +74,5 @@ export const projectSchema: Schema<IProject> = new Schema(
   },
 );
 
-export const Project = mongoose.model<IProject>("Project", projectSchema);
+export const Job = mongoose.model<IJob>("Job", jobSchema);
+export default Job;

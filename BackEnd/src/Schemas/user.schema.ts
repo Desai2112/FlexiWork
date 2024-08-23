@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-import { IUser, userRole } from "../Models/user";
+import { IUser, userRole } from "../Models/user.model";
 
 export type loginBodyType = { email: string; password: string };
 

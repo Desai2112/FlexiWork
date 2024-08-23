@@ -1,4 +1,4 @@
-import { User } from "../Models/user";
+import { User } from "../Models/user.model";
 import { Request, Response, NextFunction } from "express";
 import validator from "validator";
 import {
@@ -10,8 +10,8 @@ import {
 } from "../Schemas/user.schema";
 import { GenericResponseType } from "../Schemas/genericResponse.schema";
 import { sendOTPEmail } from "../Configurations/sendOtpMail";
-import { Verification } from "../Models/verification";
-import Skill from "../Models/skills";
+import { Verification } from "../Models/verification.model";
+import Skill from "../Models/skills.model";
 import bcrypt from "bcrypt";
 import { sendPasswordResetEmail } from "../Configurations/sendResetPass";
 

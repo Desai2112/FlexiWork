@@ -1,145 +1,66 @@
+import User from "../Models/user.model";
+import Project from "../Models/job.model";
 import { Request, Response } from "express";
-import {
-  AssignJobRequestBodyType,
-  AssignJobResponseBodyType,
-  JobStatusUpdateRequestBodyType,
-  JobStatusUpdateResponseBodyType,
-  showPendingJobStatusResponseBodyType,
-} from "../Schemas/job.schema";
-import { Job, jobStatus } from "../Models/job";
-import { GenericResponseType } from "../Schemas/genericResponse.schema";
 
-const assignJob = async (
-  req: Request<
-    any,
-    AssignJobResponseBodyType | GenericResponseType,
-    AssignJobRequestBodyType
-  >,
-  res: Response<AssignJobResponseBodyType | GenericResponseType>,
-) => {
+const addJob = async (req: Request, res: Response) => {
   try {
-    const { projectId, clientId, freelancerId, bidAmount, comment } = req.body;
-    if (!projectId || !clientId || !freelancerId || bidAmount) {
-      return res.status(400).json({
-        success: false,
-        message: "ProjectId, clientId,bidAmount and freelancerId  are required",
-      });
+    const clientId = req.session.user;
+    console.log(clientId);
+    const {
+      projectName,
+      description,
+      maxPrice,
+      expectedTime,
+      bidDuration,
+      requiredSkills,
+    } = req.body;
+    if (
+      !clientId ||
+      !projectName ||
+      !description ||
+      !maxPrice ||
+      !expectedTime ||
+      !bidDuration ||
+      !requiredSkills
+    ) {
+      return res.status(400).json({ message: "Missing required fields" });
     }
-    const job = new Job({
-      projectId: projectId,
-      clientId: clientId,
-      freelancerId: freelancerId,
-      bidAmount: bidAmount,
-      comment: comment,
-      status: jobStatus.Pending,
+    const user = await User.findOne({ _id: clientId });
+    if (!user) {
+      return res
+        .status(400)
+        .json({ message: "User not found", success: false });
+    }
+    const project = await Project.create({
+      projectName: projectName,
+      description: description,
+      expectedTime: expectedTime,
+      maxPrice: maxPrice,
+      bidDuration: bidDuration,
+      ClientId: clientId,
+      requiredSkills: requiredSkills,
     });
-    await job.save();
-    res.status(200).json({
-      success: true,
-      job,
-      message: "Job assigned successfully",
-    });
+    return res
+      .status(200)
+      .json({ message: "Project added successfully", success: true });
   } catch (error) {
-    console.log(Error);
+    console.error("Error adding project:", error);
+    return res.status(500).json({ message: "Internal server error" });
   }
 };
 
-const jobStatusUpdate = async (
-  req: Request<
-    any,
-    JobStatusUpdateResponseBodyType | GenericResponseType,
-    JobStatusUpdateRequestBodyType
-  >,
-  res: Response<JobStatusUpdateResponseBodyType | GenericResponseType>,
-) => {
+const showAllClientJobs = async (req: Request, res: Response) => {
   try {
-    const { jobId, status } = req.body;
-    if (!jobId || !status) {
-      return res.status(400).json({
-        success: false,
-        message: "JobId and status are required",
-      });
-    }
-    const job = await Job.findById(jobId);
-    if (!job) {
-      return res.status(400).json({
-        success: false,
-        message: "Job not found",
-      });
-    }
-    job.status = status;
-    await job.save();
-    res.status(200).json({
-      success: true,
-      job,
-      message: "Job status updated successfully",
+    const clientId = req.session.user;
+    const projects = await Project.find({
+      deleted: false,
+      ClientId: clientId,
     });
+    return res.status(200).json({ projects });
   } catch (error) {
-    console.log(Error);
+    console.error("Error showing projects:", error);
+    return res.status(500).json({ message: "Internal server error" });
   }
 };
 
-const showPendingJobStatus = async (
-  req: Request<any, GenericResponseType | showPendingJobStatusResponseBodyType>,
-  res: Response<showPendingJobStatusResponseBodyType | GenericResponseType>,
-) => {
-  try {
-    const pendingJobs = await Job.find({ status: jobStatus.Pending });
-    res.status(200).json({
-      success: true,
-      pendingjobs: pendingJobs,
-      message: "Pending jobs fetched successfully",
-    });
-  } catch (error) {
-    console.log(Error);
-  }
-};
-
-const showActiveJobs = async (req: Request, res: Response) => {
-  try {
-    const assignedJobs = await Job.find({ status: jobStatus.Active });
-    res.status(200).json({
-      success: true,
-      assignedJobs,
-      message: "Assigned jobs fetched successfully",
-    });
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-const completeWork = async (req: Request, res: Response) => {
-  try {
-    const { jobId } = req.body;
-    if (!jobId) {
-      return res.status(400).json({
-        success: false,
-        message: "JobId is required",
-      });
-    }
-    const job = await Job.findById(jobId);
-    if (!job) {
-      return res.status(400).json({
-        success: false,
-        message: "Job not found",
-      });
-    }
-    job.status = jobStatus.Complete;
-    await job.save();
-    res.status(200).json({
-      success: true,
-      job,
-      message: "Job status updated successfully",
-    });
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-export {
-  assignJob,
-  jobStatusUpdate,
-  showActiveJobs,
-  showPendingJobStatus,
-  completeWork,
-};
+export { addJob, showAllClientJobs };

@@ -51,16 +51,15 @@ app.use(
 );
 
 //Routes import
-import authRoutes from "./Routes/authRoutes.Route";
-import clientRoutes from "./Routes/clientRoutes.Route";
-import userProfileRoutes from "./Routes/userProfileRoutes.Route";
-// import freelancerRoutes from "./Routes/freelancerRoutes.Route";
+import authRoutes from "./Routes/auth.Route";
+import userProfileRoutes from "./Routes/userProfile.Route";
+import jobRoutes from "./Routes/job.Routes";
+import bidRoRoutes from "./Routes/bid.Routes";
 import MongoStore from "connect-mongo";
 import mongoose from "mongoose";
 
 //Routes declaration
 app.use("/auth", authRoutes);
-app.use("/client", clientRoutes);
 app.use("/user", userProfileRoutes);
-
-// app.use("/freelancer", freelancerRoutes);
+app.use("/job", jobRoutes);
+app.use("/bid", bidRoRoutes);

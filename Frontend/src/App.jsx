@@ -11,6 +11,7 @@ import LandingPage from './pages/Common/LandingPage';
 import HomePage from './pages/Client/Homepage';
 import ProfilePage from './pages/Client/ProfilePage';
 import ForgotPassword from './pages/Auth/ForgotPassword';
+import ResetPassword from './pages/Auth/ResetPassword';
 
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
         <Route path="/verify-otp" element={<VerifyOtp />} />
         <Route path="/user-details" element={<UserDetails />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/client" element={<HomePage />} />
         <Route path="/freelancer/profile" element={<ProfilePage />} />
         <Route path="/freelancer" element={<FHomepage />} />

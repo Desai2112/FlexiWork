@@ -1,5 +1,5 @@
 import { Schema } from "mongoose";
-import { IJob, jobStatus } from "../Models/job";
+import { IJob, jobStatus } from "../Models/job.model";
 
 export type AssignJobRequestBodyType = {
   freelancerId: Schema.Types.ObjectId;

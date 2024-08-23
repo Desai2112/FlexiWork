@@ -1,5 +1,5 @@
 import { Schema } from "mongoose";
-import { IProject } from "../Models/projects";
+import { IProject } from "../Models/job.model";
 
 type TagInfo = {
   tagName: string;

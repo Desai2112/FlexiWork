@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { User } from "../Models/user";
+import { User } from "../Models/user.model";
 import { GenericResponseType } from "../Schemas/genericResponse.schema";
 
 const isClient = async (
