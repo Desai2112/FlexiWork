@@ -9,6 +9,7 @@ import {
   resetPasswordEmail,
   sendOtp,
   verifyOtp,
+  verifyPasstoken,
 } from "../Controllers/auth.controller";
 import {
   loginBodyType,
@@ -42,5 +43,6 @@ router.route("/logout").delete<any, GenericResponseType>(logOut);
 router.route("/get-all-skills").get(getAllSiklls);
 router.route("/send-reset-link").post(resetPasswordEmail);
 router.route("/reset-password").post(resetPassword);
+router.route("/password-token-verify").post(verifyPasstoken);
 
 export default router;

@@ -5,7 +5,8 @@ import Bid from "../Models/bid.model";
 
 const addBid = async (req: Request, res: Response) => {
   try {
-    const { jobId, freelancerId, bidAmount, deliveryTime } = req.body;
+    const freelancerId = req.session.user;
+    const { jobId, bidAmount, deliveryTime, description } = req.body;
     const job = await Job.findById(jobId);
     if (!job) {
       return res.status(400).json({ message: "Job not found", success: false });
@@ -22,6 +23,7 @@ const addBid = async (req: Request, res: Response) => {
     const newBid = new Bid({
       jobId,
       freelancerId,
+      description,
       status: "pending",
       bidAmount,
       deliveryTime,
@@ -38,6 +40,16 @@ const addBid = async (req: Request, res: Response) => {
 const showProjectBid = async (req: Request, res: Response) => {
   try {
     const { jobId } = req.params;
+    const clientId = req.session.user;
+    const job = await Job.findById(jobId);
+    if (!job) {
+      return res.status(400).json({ message: "Job not found", success: false });
+    }
+    if (job.ClientId && job.ClientId !== clientId) {
+      return res
+        .status(400)
+        .json({ message: "Not authorized", success: false });
+    }
     const bids = await Bid.find({ jobId: jobId });
     if (bids.length === 0) {
       return res.status(400).json({ message: "No bids found", success: false });

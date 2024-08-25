@@ -4,6 +4,7 @@ export enum JobStatus {
   Completed = "completed",
   Assigned = "assigned",
   New = "new",
+  Expired = "expired",
 }
 
 export interface IJob {
@@ -15,7 +16,8 @@ export interface IJob {
   expectedTime: number;
   maxPrice: number;
   bidDuration: number;
-  ClientId: mongoose.Types.ObjectId;
+  bidEnds: Date;
+  ClientId: mongoose.Schema.Types.ObjectId;
   requiredSkills: mongoose.Types.ObjectId[];
   deleted: boolean;
   _id: Schema.Types.ObjectId;
@@ -25,11 +27,12 @@ export interface IJobModel extends IJob, Document {
   _id: mongoose.Schema.Types.ObjectId;
 }
 
-export const jobSchema: Schema<IJob> = new Schema(
+export const jobSchema: Schema<IJobModel> = new Schema(
   {
     projectName: {
       type: String,
       required: true,
+      index: true,
     },
     description: {
       type: String,
@@ -57,6 +60,10 @@ export const jobSchema: Schema<IJob> = new Schema(
       type: Number,
       required: true,
     },
+    bidEnds: {
+      type: Date,
+      required: true,
+    },
     requiredSkills: {
       type: [mongoose.Schema.Types.ObjectId],
       ref: "Skill",
@@ -74,5 +81,5 @@ export const jobSchema: Schema<IJob> = new Schema(
   },
 );
 
-export const Job = mongoose.model<IJob>("Job", jobSchema);
+export const Job = mongoose.model<IJobModel>("Job", jobSchema);
 export default Job;

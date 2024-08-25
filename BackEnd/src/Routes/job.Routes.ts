@@ -1,9 +1,25 @@
 import { Router } from "express";
-import { addJob, showAllClientJobs } from "../Controllers/job.controller";
+import {
+  addJob,
+  showAllClientJobs,
+  showAllJobs,
+  showAllAvailableJobs,
+  showExpiredJobs,
+  searchBySkill,
+  searchJobsByName,
+} from "../Controllers/job.controller";
+import isAuthenticated from "../Middlewares/isAuthenticated";
+import isClient from "../Middlewares/isClient";
+import isFreelancer from "../Middlewares/isFreelancer";
 
 const router = Router();
 
-router.post("/add", addJob);
-router.get("/show", showAllClientJobs);
+router.route("/add").post(isAuthenticated, isClient, addJob);
+router.route("/show").get(isAuthenticated, isClient, showAllClientJobs);
+router.route("/showall").get(isAuthenticated, showAllJobs);
+router.route("/showavailable").get(isAuthenticated, showAllAvailableJobs);
+router.route("/showexpired").get(isAuthenticated, showExpiredJobs);
+router.route("/search/skill/:skillId").get(isAuthenticated, searchBySkill);
+router.route("/search/name/:jobName").get(isAuthenticated, searchJobsByName);
 
 export default router;

@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import bodyParser from "body-parser";
 import "./index.d.ts";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 
 dotenv.config();
 
@@ -13,6 +14,7 @@ const port = process.env.PORT || 3000;
 const secret = process.env.Session_Secret || "abcdfekhb4efc5f4";
 app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(cookieParser());
 
 app.get("/", (req: Request, res: Response) => {
   console.log("Hello App is working");
@@ -30,7 +32,12 @@ app.use(
     secret: secret,
     resave: false,
     saveUninitialized: false,
-    cookie: { maxAge: 24 * 60 * 60 * 1000 },
+    cookie: {
+      maxAge: 24 * 60 * 60 * 1000,
+      secure: false,
+      httpOnly: true,
+      sameSite: "lax",
+    },
     name: "user",
     store: MongoStore.create({
       client: mongoose.connection.getClient(),

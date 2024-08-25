@@ -1,139 +1,91 @@
-import React from 'react';
 import Navbar from '../../components/Client/Navbar';
+import HomeCard from '../../components/Client/HomeCard';
 
 const HomePage = () => {
+  const myProjects = [
+    { label: 'Website Redesign', value: 'In Progress', valueClass: 'text-sm text-gray-500' },
+    { label: 'Mobile App Development', value: 'In Progress', valueClass: 'text-sm text-gray-500' },
+    { label: 'Branding and Marketing', value: 'Completed', valueClass: 'text-sm text-gray-500' },
+  ];
+
+  const upcomingProjects = [
+    { label: 'E-commerce Website', value: 'Due in 2 weeks', valueClass: 'text-sm text-gray-500' },
+    { label: 'Social Media Management', value: 'Due in 1 month', valueClass: 'text-sm text-gray-500' },
+    { label: 'SEO Optimization', value: 'Due in 3 months', valueClass: 'text-sm text-gray-500' },
+  ];
+
+  const bidsOnProjects = [
+    { label: 'E-commerce Website', value: '$10,000 - 5 Bids', valueClass: 'font-semibold' },
+    { label: 'Social Media Management', value: '$7,500 - 3 Bids', valueClass: 'font-semibold' },
+    { label: 'SEO Optimization', value: '$5,000 - 4 Bids', valueClass: 'font-semibold' },
+  ];
+
+  const activitySummary = [
+    { label: 'Projects Completed', value: '12', valueClass: 'font-semibold' },
+    { label: 'Invoices Sent', value: '24', valueClass: 'font-semibold' },
+    { label: 'Messages Sent', value: '87', valueClass: 'font-semibold' },
+  ];
+
+  const recentInvoices = [
+    { label: 'Website Redesign', value: '$2,500', valueClass: 'font-semibold' },
+    { label: 'Mobile App Development', value: '$3,000', valueClass: 'font-semibold' },
+    { label: 'Branding and Marketing', value: '$1,800', valueClass: 'font-semibold' },
+  ];
+
+  const upcomingDeadlines = [
+    { label: 'Website Redesign Deadline', value: 'Aug 30, 2024', valueClass: 'text-sm text-red-500' },
+    { label: 'Mobile App Launch', value: 'Sep 15, 2024', valueClass: 'text-sm text-red-500' },
+    { label: 'SEO Optimization Report', value: 'Oct 1, 2024', valueClass: 'text-sm text-red-500' },
+  ];
+  
+
   return (
     <>
       <div className="min-h-screen bg-gray-100">
-      <Navbar />
+        <Navbar />
         <div className="flex justify-between items-center my-6 mx-8">
           <h1 className="text-2xl font-semibold">Dashboard</h1>
-          {/* Add New Project Button */}
           <button className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
             + Add New Project
           </button>
         </div>
         <main className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mx-8">
-          
-          {/* My Projects */}
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h2 className="text-lg font-semibold mb-4">My Projects</h2>
-            <ul className="space-y-2">
-              <li className="flex justify-between">
-                <span>Website Redesign</span>
-                <span className="text-sm text-gray-500">In Progress</span>
-              </li>
-              <li className="flex justify-between">
-                <span>Mobile App Development</span>
-                <span className="text-sm text-gray-500">In Progress</span>
-              </li>
-              <li className="flex justify-between">
-                <span>Branding and Marketing</span>
-                <span className="text-sm text-gray-500">Completed</span>
-              </li>
-            </ul>
-            <a href="#" className="block text-blue-500 mt-4">View All Projects</a>
-          </div>
-
-          {/* Upcoming Projects */}
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h2 className="text-lg font-semibold mb-4">Upcoming Projects</h2>
-            <ul className="space-y-2">
-              <li className="flex justify-between">
-                <span>E-commerce Website</span>
-                <span className="text-sm text-gray-500">Due in 2 weeks</span>
-              </li>
-              <li className="flex justify-between">
-                <span>Social Media Management</span>
-                <span className="text-sm text-gray-500">Due in 1 month</span>
-              </li>
-              <li className="flex justify-between">
-                <span>SEO Optimization</span>
-                <span className="text-sm text-gray-500">Due in 3 months</span>
-              </li>
-            </ul>
-            <a href="#" className="block text-blue-500 mt-4">View All Upcoming Projects</a>
-          </div>
-
-          {/* Bids on Upcoming Projects */}
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h2 className="text-lg font-semibold mb-4">Bids on Upcoming Projects</h2>
-            <ul className="space-y-2">
-              <li className="flex justify-between">
-                <span>E-commerce Website</span>
-                <span className="font-semibold">$10,000 - 5 Bids</span>
-              </li>
-              <li className="flex justify-between">
-                <span>Social Media Management</span>
-                <span className="font-semibold">$7,500 - 3 Bids</span>
-              </li>
-              <li className="flex justify-between">
-                <span>SEO Optimization</span>
-                <span className="font-semibold">$5,000 - 4 Bids</span>
-              </li>
-            </ul>
-            <a href="#" className="block text-blue-500 mt-4">View All Bids</a>
-          </div>
-          {/* Activity Summary */}
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h2 className="text-lg font-semibold mb-4">Activity Summary</h2>
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <span>Projects Completed</span>
-                <span className="font-semibold">12</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Invoices Sent</span>
-                <span className="font-semibold">24</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Messages Sent</span>
-                <span className="font-semibold">87</span>
-              </div>
-            </div>
-            <a href="#" className="block text-blue-500 mt-4">View All Activity</a>
-          </div>
-
-          {/* Recent Invoices */}
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h2 className="text-lg font-semibold mb-4">Recent Invoices</h2>
-            <ul className="space-y-2">
-              <li className="flex justify-between">
-                <span>Website Redesign</span>
-                <span className="font-semibold">$2,500</span>
-              </li>
-              <li className="flex justify-between">
-                <span>Mobile App Development</span>
-                <span className="font-semibold">$3,000</span>
-              </li>
-              <li className="flex justify-between">
-                <span>Branding and Marketing</span>
-                <span className="font-semibold">$1,800</span>
-              </li>
-            </ul>
-            <a href="#" className="block text-blue-500 mt-4">View All Invoices</a>
-          </div>
-
-          {/* Recent Messages */}
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h2 className="text-lg font-semibold mb-4">Recent Messages</h2>
-            <ul className="space-y-2">
-              <li className="flex justify-between">
-                <span>New Project Inquiry</span>
-                <span className="text-sm text-gray-500">2 days ago</span>
-              </li>
-              <li className="flex justify-between">
-                <span>Feedback on Website</span>
-                <span className="text-sm text-gray-500">1 week ago</span>
-              </li>
-              <li className="flex justify-between">
-                <span>Invoice Payment Reminder</span>
-                <span className="text-sm text-gray-500">3 weeks ago</span>
-              </li>
-            </ul>
-            <a href="#" className="block text-blue-500 mt-4">View All Messages</a>
-          </div>
-          
+          <HomeCard 
+            title="My Projects" 
+            items={myProjects} 
+            linkText="View All Projects" 
+            linkHref="/client/project/working"
+          />
+          <HomeCard 
+            title="Upcoming Projects" 
+            items={upcomingProjects} 
+            linkText="View All Upcoming Projects" 
+            linkHref="/client/project"
+          />
+          <HomeCard 
+            title="Bids on Upcoming Projects" 
+            items={bidsOnProjects} 
+            linkText="View All Bids" 
+            linkHref="/client/bids"
+          />
+          <HomeCard 
+            title="Activity Summary" 
+            items={activitySummary} 
+            linkText="View All Activity" 
+            linkHref="/client/stat"
+          />
+          <HomeCard 
+            title="Recent Invoices" 
+            items={recentInvoices} 
+            linkText="View All Invoices" 
+            linkHref="/client/invoice"
+          />
+          <HomeCard 
+            title="Upcoming Deadlines" 
+            items={upcomingDeadlines} 
+            linkText="View All Projects" 
+            linkHref="/client/project/deadlines"
+          />
         </main>
       </div>
     </>

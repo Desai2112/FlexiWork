@@ -370,6 +370,30 @@ const resetPassword = async (req: Request, res: Response) => {
   }
 };
 
+const verifyPasstoken = async (req: Request, res: Response) => {
+  const { token } = req.body;
+
+  const user = await User.findOne({ passwordResetToken: token });
+
+  if (!user) {
+    return res.status(404).json({
+      message: "Invalid token",
+      success: false,
+    });
+  } else {
+    if (user.passwordResetExpires && user.passwordResetExpires < new Date()) {
+      return res.status(404).json({
+        message: "Token expired",
+        success: false,
+      });
+    }
+    return res.status(200).json({
+      message: "Token verified",
+      success: true,
+    });
+  }
+};
+
 export {
   addUser,
   loginUser,
@@ -380,4 +404,5 @@ export {
   getAllSiklls,
   resetPasswordEmail,
   resetPassword,
+  verifyPasstoken,
 };
