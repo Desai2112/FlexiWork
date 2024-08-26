@@ -181,6 +181,26 @@ const searchJobsByName = async (req: Request, res: Response) => {
   }
 };
 
+const viewProject = async (req: Request, res: Response) => {
+  try {
+    const { projectId } = req.params;
+    const project = await Job.findById(projectId)
+      .populate("requiredSkills", "skill")
+      .populate("bids", "freelancerName description bidAmount")
+      .populate("ClientId", "companyName email");
+    if (!project) {
+      return res
+        .status(400)
+        .json({ message: "Project not found", success: false });
+    }
+    return res.status(200).json({ project, success: true });
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(500)
+      .json({ message: "Internal server error", success: false });
+  }
+};
 export {
   addJob,
   showAllClientJobs,
@@ -189,4 +209,5 @@ export {
   showExpiredJobs,
   searchBySkill,
   searchJobsByName,
+  viewProject,
 };

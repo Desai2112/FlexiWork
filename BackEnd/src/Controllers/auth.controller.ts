@@ -93,7 +93,7 @@ const verifyOtp = async (req: Request, res: Response) => {
       if (verified) {
         user.emailVerified = true;
         await User.create({
-          email: user.email,
+          email: user.email.toLowerCase(),
           role: user.role,
           emailVerified: true,
         });
@@ -197,8 +197,7 @@ const loginUser = async (
         message: "Email and password are required.",
       });
     }
-
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email: email.toLocaleLowerCase() });
     if (!user) {
       return res.status(400).json({
         success: false,

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Navbar from '../../components/Client/Navbar';
@@ -16,7 +17,7 @@ const MyProjects = () => {
         const response = await axios.get('http://localhost:5000/job/show', { withCredentials: true });
         console.log(response);
         setMyProjects(response.data.projects);
-        setFilteredProjects(response.data.projects); // Initialize filteredProjects with all projects
+        setFilteredProjects(response.data.projects);
       } catch (error) {
         console.error('Error fetching projects:', error);
       }

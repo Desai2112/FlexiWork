@@ -2,10 +2,12 @@ import { Request, Response } from "express";
 import Job from "../Models/job.model";
 import AssignedJob from "../Models/assignedjob.model";
 import Bid from "../Models/bid.model";
+import User from "../Models/user.model";
 
 const addBid = async (req: Request, res: Response) => {
   try {
     const freelancerId = req.session.user;
+    const user = await User.findOne({ _id: freelancerId }).select("name");
     const { jobId, bidAmount, deliveryTime, description } = req.body;
     const job = await Job.findById(jobId);
     if (!job) {
@@ -28,8 +30,12 @@ const addBid = async (req: Request, res: Response) => {
       bidAmount,
       deliveryTime,
       clientId: job.ClientId,
+      freelancerName: user?.name,
     });
     await newBid.save();
+    await job.updateOne({
+      $push: { bids: newBid._id },
+    });
     res.status(200).json({ message: "Bid placed successfully", success: true });
   } catch (err) {
     console.log(err);
@@ -115,4 +121,45 @@ const rejectJobBid = async (req: Request, res: Response) => {
   }
 };
 
-export { addBid, showProjectBid, acceptJobBid, rejectJobBid };
+const sendProjectwiseBid = async (req: Request, res: Response) => {
+  try {
+    const clientId = req.session.user;
+    const jobs = await Job.find({ ClientId: clientId });
+    if (jobs.length === 0) {
+      return res.status(400).json({ message: "No jobs found", success: false });
+    }
+    const bids = await Bid.find({ clientId: clientId });
+    if (bids.length === 0) {
+      return res.status(400).json({ message: "No bids found", success: false });
+    }
+    res.status(200).json({ bids, success: true });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Internal server error", success: false });
+  }
+};
+
+const sendAllProjectwiseBid = async (req: Request, res: Response) => {
+  try {
+    const clientId = req.session.user;
+    const jobs = await Job.find({ ClientId: clientId })
+      .populate("bids", "freelancerName bidAmount")
+      .select("_id projectName");
+    return res.status(200).json({
+      jobs,
+      success: true,
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Internal server error", success: false });
+  }
+};
+
+export {
+  addBid,
+  showProjectBid,
+  acceptJobBid,
+  rejectJobBid,
+  sendProjectwiseBid,
+  sendAllProjectwiseBid,
+};

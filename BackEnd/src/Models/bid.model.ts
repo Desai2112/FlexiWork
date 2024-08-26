@@ -9,6 +9,7 @@ export enum BidStatus {
 export interface IBid {
   jobId: mongoose.Types.ObjectId;
   freelancerId: mongoose.Types.ObjectId;
+  freelancerName: string;
   bidAmount: number;
   deliveryTime: number;
   description: string;
@@ -31,6 +32,10 @@ export const bidSchema: Schema<IBidModel> = new Schema(
     freelancerId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
+      required: true,
+    },
+    freelancerName: {
+      type: String,
       required: true,
     },
     bidAmount: {

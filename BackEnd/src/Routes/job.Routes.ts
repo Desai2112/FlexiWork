@@ -7,6 +7,7 @@ import {
   showExpiredJobs,
   searchBySkill,
   searchJobsByName,
+  viewProject,
 } from "../Controllers/job.controller";
 import isAuthenticated from "../Middlewares/isAuthenticated";
 import isClient from "../Middlewares/isClient";
@@ -21,5 +22,6 @@ router.route("/showavailable").get(isAuthenticated, showAllAvailableJobs);
 router.route("/showexpired").get(isAuthenticated, showExpiredJobs);
 router.route("/search/skill/:skillId").get(isAuthenticated, searchBySkill);
 router.route("/search/name/:jobName").get(isAuthenticated, searchJobsByName);
+router.route("/:projectId").get(isAuthenticated, viewProject);
 
 export default router;

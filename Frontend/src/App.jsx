@@ -13,6 +13,8 @@ import ProfilePage from './pages/Client/ProfilePage';
 import ForgotPassword from './pages/Auth/ForgotPassword';
 import ResetPassword from './pages/Auth/ResetPassword';
 import MyProjects from './pages/Client/MyProjects';
+import BidsPage from './pages/Client/BidsPage';
+import ViewProjectPage from './pages/Client/ViewProject';
 
 
 function App() {
@@ -28,6 +30,8 @@ function App() {
         <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/client" element={<HomePage />} />
         <Route path="/client/project" element={<MyProjects />} />
+        <Route path="/client/project/:id" element={<ViewProjectPage />} />
+        <Route path="/client/bids" element={<BidsPage />} />
         <Route path="/freelancer/profile" element={<ProfilePage />} />
         <Route path="/freelancer" element={<FHomepage />} />
         <Route path="/guides" element={<GuidesPage />} />

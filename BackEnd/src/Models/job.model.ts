@@ -18,8 +18,9 @@ export interface IJob {
   bidDuration: number;
   bidEnds: Date;
   ClientId: mongoose.Schema.Types.ObjectId;
-  requiredSkills: mongoose.Types.ObjectId[];
+  requiredSkills: mongoose.Schema.Types.ObjectId[];
   deleted: boolean;
+  bids: mongoose.Schema.Types.ObjectId[];
   _id: Schema.Types.ObjectId;
 }
 
@@ -63,6 +64,10 @@ export const jobSchema: Schema<IJobModel> = new Schema(
     bidEnds: {
       type: Date,
       required: true,
+    },
+    bids: {
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: "Bid",
     },
     requiredSkills: {
       type: [mongoose.Schema.Types.ObjectId],
