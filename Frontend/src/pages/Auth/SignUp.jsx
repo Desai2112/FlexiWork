@@ -27,13 +27,12 @@ const SignUp = () => {
       .post("http://localhost:5000/auth/send-otp", { email, role })
       .then(() => {
         toast.success("OTP has been sent to your email.", {
-          duration: 2000, // Auto close the alert after 3 seconds
+          duration: 2000, 
         });
 
-        // Redirect after a delay
         setTimeout(() => {
           navigate("/verify-otp", { state: { email, role } });
-        }, 2000); // 3 seconds delay to simulate processing
+        }, 2000);
       })
       .catch((error) => {
         // Show toast for error
@@ -54,7 +53,6 @@ const SignUp = () => {
           />
         </div>
 
-        {/* Sign Up Form Section */}
         <div className="w-full md:w-1/2 flex items-center justify-center bg-white p-4 md:p-8">
           <div className="w-full max-w-sm md:max-w-md p-6">
             <img

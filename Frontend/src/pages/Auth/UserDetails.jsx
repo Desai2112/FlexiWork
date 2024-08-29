@@ -18,14 +18,15 @@ const UserDetails = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [mobileNo, setMobileNo] = useState("");
   const [companyName, setCompanyName] = useState("");
-  const [skillsOptions, setSkillsOptions] = useState([]); // Dynamic options state
+  const [skillsOptions, setSkillsOptions] = useState([]); 
   const [selectedSkills, setSelectedSkills] = useState([]);
   const [bio, setBio] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [profilePic, setProfilePic] = useState(null); // State for profile picture
+  const [profilePicUrl, setProfilePicUrl] = useState(""); // URL for uploaded profile picture
 
   useEffect(() => {
-    // Fetch skills data from the backend
     if (role !== "client") {
       fetch("http://localhost:5000/auth/get-all-skills")
         .then((response) => response.json())
@@ -48,6 +49,24 @@ const UserDetails = () => {
     }
   }, [role]);
 
+  // Function to handle profile picture upload to Cloudinary
+  const uploadImage = async (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "FlexiWork"); // Replace with your Cloudinary upload preset
+
+    try {
+      const response = await axios.post(
+        "https://api.cloudinary.com/v1_1/dgvslio7u/image/upload", // Replace 'your_cloud_name' with your actual Cloudinary cloud name
+        formData
+      );
+      return response.data.secure_url;
+    } catch (error) {
+      toast.error("Failed to upload image. Please try again.");
+      return null;
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -58,25 +77,35 @@ const UserDetails = () => {
       return;
     }
 
+    let imageUrl = profilePicUrl;
+
+    if (profilePic && !profilePicUrl) {
+      imageUrl = await uploadImage(profilePic);
+      if (!imageUrl) {
+        setLoading(false);
+        return;
+      }
+      setProfilePicUrl(imageUrl);
+    }
+
     const userDetails = {
       name,
       email,
       role,
-      password, // Include password in the request
+      password,
       mobileNo,
       companyName,
       skills: selectedSkills.map((skill) => skill.value),
       bio,
+      profilePicUrl: imageUrl,
     };
 
     try {
-      // Make the signup request
       const response = await axios.post('http://localhost:5000/auth/signup', userDetails);
-      
+
       if (response.status === 200) {
         toast.success("User details saved successfully.");
-        // Redirect to a different page if needed
-        navigate(`/${role}`); // Replace '/success' with your actual route
+        navigate(`/${role}`);
       }
     } catch (error) {
       console.error("Error during signup:", error);
@@ -213,17 +242,27 @@ const UserDetails = () => {
                 rows="4"
               />
             </div>
+            <div>
+              <label className="block text-gray-700 mb-1">Profile Picture</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setProfilePic(e.target.files[0])}
+                className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50"
+              />
+            </div>
             <button
               type="submit"
-              className="w-full bg-blue-500 text-white py-2 rounded-lg shadow hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+              className={`w-full py-2 rounded-lg text-white ${
+                loading ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600"
+              }`}
               disabled={loading}
             >
-              {loading ? "Saving..." : "Save Details"}
+              {loading ? "Saving..." : "Save"}
             </button>
           </form>
         </div>
       </div>
-
       <ToastContainer />
     </div>
   );

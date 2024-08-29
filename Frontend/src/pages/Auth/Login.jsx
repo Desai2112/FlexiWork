@@ -23,6 +23,9 @@ const Login = () => {
     setShowPassword((prevState) => !prevState);
   };
 
+  const handleForgotPassword=async()=>{
+    navigate("/forgot-password");
+  }
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -54,10 +57,7 @@ const Login = () => {
         }
       }
     } catch (error) {
-      // console.error("Login failed:", error);
-
       if (error.response) {
-        // console.error("Server responded with:", error.response.data);
         toast.error(error.response.data.message || "An error occurred. Please try again later.");
       } else {
         toast.error("An error occurred. Please try again later.");
@@ -145,7 +145,7 @@ const Login = () => {
             </button>
             <div className="mt-4 text-center">
               <a
-                href="#forgot-password"
+                onClick={handleForgotPassword}
                 className="text-[#1e4487] hover:underline"
               >
                 Forgot Password?
@@ -160,7 +160,6 @@ const Login = () => {
               </p>
             </div>
           </form>
-          {/* Back Button */}
           <div className="mt-6 flex justify-center">
             <button
               onClick={handleGoBack}

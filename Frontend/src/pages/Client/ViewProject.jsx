@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import  { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import Navbar from '../../components/Client/Navbar'; // Ensure Navbar component is imported correctly
 import { useNavigate, useParams } from 'react-router-dom';
@@ -6,7 +6,7 @@ import axios from 'axios';
 import { IoMdArrowRoundBack } from "react-icons/io";
 
 const ViewProjectPage = () => {
-  const { id } = useParams(); // Extract the 'id' from URL parameters
+  const { id } = useParams();
   const [projectData, setProjectData] = useState(null);
   const navigate = useNavigate();
 
@@ -28,7 +28,7 @@ const ViewProjectPage = () => {
   };
 
   const handleViewAllBids = () => {
-    navigate(`/projects/${id}/bids`); // Redirect to the detailed bids page
+    navigate(`/client/project/${id}/bids`); // Redirect to the detailed bids page
   };
 
   if (!projectData) {
@@ -150,7 +150,7 @@ ViewProjectPage.propTypes = {
         description: PropTypes.string.isRequired
       })
     ).isRequired
-  }).isRequired
+  })
 };
 
 export default ViewProjectPage;

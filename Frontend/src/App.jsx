@@ -15,6 +15,7 @@ import ResetPassword from './pages/Auth/ResetPassword';
 import MyProjects from './pages/Client/MyProjects';
 import BidsPage from './pages/Client/BidsPage';
 import ViewProjectPage from './pages/Client/ViewProject';
+import ShowAllProjectBids from './pages/Client/ShowAllProjectBids';
 
 
 function App() {
@@ -31,6 +32,7 @@ function App() {
         <Route path="/client" element={<HomePage />} />
         <Route path="/client/project" element={<MyProjects />} />
         <Route path="/client/project/:id" element={<ViewProjectPage />} />
+        <Route path="/client/project/:id/bids" element={<ShowAllProjectBids />} />
         <Route path="/client/bids" element={<BidsPage />} />
         <Route path="/freelancer/profile" element={<ProfilePage />} />
         <Route path="/freelancer" element={<FHomepage />} />
