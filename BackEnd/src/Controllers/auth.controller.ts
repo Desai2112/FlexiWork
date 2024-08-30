@@ -2,20 +2,26 @@ import { User } from "../Models/user.model";
 import { Request, Response, NextFunction } from "express";
 import validator from "validator";
 import {
+  AddUserReqBody,
   loginBodyType,
   loginResponseBodyType,
   MeResponseBodyType,
-  SignUpBodyType,
-  SignUpResponseBodyType,
-} from "../Schemas/user.schema";
+  ResetPasswordEmailReqBodyType,
+  ResetPasswordReqBodyType,
+  SendOTPReqBodyType,
+  VerifyOTPReqBodyType,
+  VerifyPasstokenReqBody,
+} from "../Schemas/auth.schema";
 import { GenericResponseType } from "../Schemas/genericResponse.schema";
 import { sendOTPEmail } from "../Configurations/sendOtpMail";
 import { Verification } from "../Models/verification.model";
-import Skill from "../Models/skills.model";
 import bcrypt from "bcrypt";
 import { sendPasswordResetEmail } from "../Configurations/sendResetPass";
 
-const sendOtp = async (req: Request, res: Response) => {
+const sendOtp = async (
+  req: Request<any, GenericResponseType, SendOTPReqBodyType>,
+  res: Response<GenericResponseType>,
+) => {
   try {
     const { email, role } = req.body;
 
@@ -70,7 +76,10 @@ const sendOtp = async (req: Request, res: Response) => {
   }
 };
 
-const verifyOtp = async (req: Request, res: Response) => {
+const verifyOtp = async (
+  req: Request<any, GenericResponseType, VerifyOTPReqBodyType>,
+  res: Response<GenericResponseType>,
+) => {
   try {
     const { email, otp } = req.body;
     console.log(req.body);
@@ -118,10 +127,22 @@ const verifyOtp = async (req: Request, res: Response) => {
   }
 };
 
-const addUser = async (req: Request, res: Response, next: NextFunction) => {
+const addUser = async (
+  req: Request<any, GenericResponseType, AddUserReqBody>,
+  res: Response<GenericResponseType>,
+) => {
   try {
-    const { name, email, role, password, mobileNo, companyName, skills, bio } =
-      req.body;
+    const {
+      name,
+      email,
+      role,
+      password,
+      mobileNo,
+      companyName,
+      skills,
+      bio,
+      profilePicUrl,
+    } = req.body;
 
     // Validate required fields
     if (!name || !password || !bio || !email || !mobileNo || !role) {
@@ -144,7 +165,6 @@ const addUser = async (req: Request, res: Response, next: NextFunction) => {
       });
     }
 
-    // Validate password length
     if (!validator.isLength(password, { min: 10 })) {
       return res.status(400).json({
         message: "Password must be at least 10 characters long.",
@@ -152,17 +172,17 @@ const addUser = async (req: Request, res: Response, next: NextFunction) => {
       });
     }
     let hpassword = await bcrypt.hash(password, 10);
-    // Prepare data for update or creation
+
     const updateData: any = {
       name,
       password: hpassword,
-      mobileNo,
+      mobileNo: mobileNo,
       bio,
+      profilePicUrl,
       profileCompleted: true,
       ...(role === "client" ? { companyName } : { skills }),
     };
 
-    // Find and update or create user
     const user = await User.findOneAndUpdate({ email }, updateData, {
       new: true,
       upsert: true,
@@ -174,7 +194,7 @@ const addUser = async (req: Request, res: Response, next: NextFunction) => {
       success: true,
     });
   } catch (error) {
-    console.error(error); // Log the error for debugging
+    console.error(error);
     return res.status(500).json({
       message: "Internal Server Error",
       success: false,
@@ -188,7 +208,6 @@ const loginUser = async (
   next: NextFunction,
 ) => {
   try {
-    // const body = req.body;
     const { email, password } = req.body;
 
     if (!email || !password) {
@@ -274,35 +293,21 @@ const logOut = async (
   }
 };
 
-const getAllSiklls = async (req: Request, res: Response) => {
-  try {
-    const skills = await Skill.find();
-    if (!skills) {
-      return res.status(404).json({
-        message: "No skills found",
-        success: false,
-      });
-    }
-    return res.status(200).json({
-      message: "Skills found",
-      skills,
-      success: true,
-    });
-  } catch (error) {
-    console.error("Error fetching skills:", error);
-    res.status(500).send({ message: "Internal Server Error", success: false });
-  }
-};
-
-const resetPasswordEmail = async (req: Request, res: Response) => {
+const resetPasswordEmail = async (
+  req: Request<any, GenericResponseType, ResetPasswordEmailReqBodyType>,
+  res: Response<GenericResponseType>,
+) => {
   try {
     const { email } = req.body;
+
     if (!email) {
       return res.status(400).json({
         message: "Email is required",
         success: false,
       });
     }
+
+    // Find user by email
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(404).json({
@@ -310,18 +315,23 @@ const resetPasswordEmail = async (req: Request, res: Response) => {
         success: false,
       });
     }
-    const passwordResetToken = await user.createPasswordResetToken();
+
+    await user.createPasswordResetToken();
+
     await user.save();
 
-    const resetLink = `${process.env.FRONTEND_URL}/reset-password/${passwordResetToken}`;
+    const resetLink = `${
+      process.env.FRONTEND_URL
+    }/reset-password/${encodeURIComponent(user.passwordResetToken || "")}`;
 
     await sendPasswordResetEmail(email, resetLink);
+
     return res.status(200).json({
       message: "Password reset email sent successfully",
       success: true,
     });
   } catch (error) {
-    console.log("Error Accured: ", error);
+    console.error("Error occurred while sending reset email:", error);
     return res.status(500).json({
       message: "Internal Server Error",
       success: false,
@@ -329,39 +339,49 @@ const resetPasswordEmail = async (req: Request, res: Response) => {
   }
 };
 
-const resetPassword = async (req: Request, res: Response) => {
+const resetPassword = async (
+  req: Request<any, GenericResponseType, ResetPasswordReqBodyType>,
+  res: Response<GenericResponseType>,
+) => {
   try {
     const { token, password } = req.body;
+
     if (!token || !password) {
       return res.status(400).json({
         message: "Token and password are required",
         success: false,
       });
     }
-    try {
-      const user = await User.findOne({ passwordResetToken: token });
-      if (!user) {
-        return res.status(404).json({
-          message: "User not found",
-          success: false,
-        });
-      }
-      user.password = password;
-      user.passwordResetToken = undefined;
-      user.passwordResetExpires = undefined;
-      await user.save();
-      return res.status(200).json({
-        message: "Password reset successfully",
-        success: true,
-      });
-    } catch (error) {
+    const decodedToken = decodeURIComponent(token);
+
+    const user = await User.findOne({ passwordResetToken: decodedToken });
+
+    if (!user) {
       return res.status(404).json({
-        message: "User not found",
+        message: "Invalid or expired token",
         success: false,
       });
     }
+
+    if (user.passwordResetExpires && user.passwordResetExpires < new Date()) {
+      return res.status(400).json({
+        message: "Reset token has expired",
+        success: false,
+      });
+    }
+
+    user.password = password;
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
+
+    await user.save();
+
+    return res.status(200).json({
+      message: "Password reset successfully",
+      success: true,
+    });
   } catch (error) {
-    console.log("Error Accured: ", error);
+    console.error("Error occurred during password reset:", error);
     return res.status(500).json({
       message: "Internal Server Error",
       success: false,
@@ -369,28 +389,29 @@ const resetPassword = async (req: Request, res: Response) => {
   }
 };
 
-const verifyPasstoken = async (req: Request, res: Response) => {
+const verifyPasstoken = async (
+  req: Request<any, GenericResponseType, VerifyPasstokenReqBody>,
+  res: Response<GenericResponseType>,
+) => {
   const { token } = req.body;
-
-  const user = await User.findOne({ passwordResetToken: token });
-
+  const decodedToken = decodeURIComponent(token);
+  const user = await User.findOne({ passwordResetToken: decodedToken });
   if (!user) {
     return res.status(404).json({
-      message: "Invalid token",
+      message: "Invalid or expired token",
       success: false,
     });
-  } else {
-    if (user.passwordResetExpires && user.passwordResetExpires < new Date()) {
-      return res.status(404).json({
-        message: "Token expired",
-        success: false,
-      });
-    }
-    return res.status(200).json({
-      message: "Token verified",
-      success: true,
+  }
+  if (user.passwordResetExpires && user.passwordResetExpires < new Date()) {
+    return res.status(400).json({
+      message: "Reset token has expired",
+      success: false,
     });
   }
+  return res.status(200).json({
+    message: "Token verified successfully",
+    success: true,
+  });
 };
 
 export {
@@ -400,7 +421,6 @@ export {
   logOut,
   sendOtp,
   verifyOtp,
-  getAllSiklls,
   resetPasswordEmail,
   resetPassword,
   verifyPasstoken,

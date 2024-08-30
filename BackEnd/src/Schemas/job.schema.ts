@@ -1,33 +1,17 @@
-import { Schema } from "mongoose";
-import { IJob, jobStatus } from "../Models/job.model";
+import { IJobModel } from "../Models/job.model";
 
-export type AssignJobRequestBodyType = {
-  freelancerId: Schema.Types.ObjectId;
-  projectId: Schema.Types.ObjectId;
-  clientId: Schema.Types.ObjectId;
-  comment: string;
-  bidAmount: number;
+export type AddJobReqBody = {
+  projectName: string;
+  description: string;
+  maxPrice: number;
+  expectedTime: number;
+  bidDuration: number;
+  requiredSkills: string[];
+  clientId: string;
 };
 
-export type AssignJobResponseBodyType = {
+export type showAllClientJobsResBody = {
   message: string;
-  job: IJob;
   success: boolean;
-};
-
-export type JobStatusUpdateRequestBodyType = {
-  jobId: Schema.Types.ObjectId;
-  status: jobStatus;
-};
-
-export type JobStatusUpdateResponseBodyType = {
-  message: string;
-  job: IJob;
-  success: boolean;
-};
-
-export type showPendingJobStatusResponseBodyType = {
-  message: string;
-  pendingjobs: IJob[];
-  success: boolean;
+  Projects: IJobModel[];
 };

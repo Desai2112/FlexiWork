@@ -22,7 +22,9 @@ export interface IUser {
   passwordResetExpires?: Date;
   emailVerified: boolean;
   profileCompleted: boolean;
+  profilePicUrl: string;
   skills: mongoose.Schema.Types.ObjectId[];
+  mobileNo: string;
 }
 
 // Define User Model Interface
@@ -66,12 +68,20 @@ const userSchema: Schema<IUserModel> = new Schema(
     passwordResetExpires: {
       type: Date,
     },
+    profilePicUrl: {
+      type: String,
+      default:
+        "https://res.cloudinary.com/dgvslio7u/image/upload/v1724904582/bj2mfbczdzzm03jxcjmt.png",
+    },
     emailVerified: {
       type: Boolean,
       default: false,
       required: true,
     },
-
+    mobileNo: {
+      type: String,
+      required: true,
+    },
     profileCompleted: {
       type: Boolean,
       default: false,
@@ -103,7 +113,6 @@ userSchema.pre<IUserModel>("save", async function (next) {
   next();
 });
 
-// Method to compare password
 userSchema.methods.comparePassword = async function (
   password: string,
 ): Promise<boolean> {
@@ -111,17 +120,15 @@ userSchema.methods.comparePassword = async function (
   return bcrypt.compare(password, user.password);
 };
 
-// Method to create password reset token
 userSchema.methods.createPasswordResetToken =
   async function (): Promise<string> {
     const user = this as IUserModel;
     const resetToken = bcrypt.genSaltSync(10);
     const hashedToken = bcrypt.hashSync(resetToken, 10);
     user.passwordResetToken = hashedToken;
-    user.passwordResetExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+    user.passwordResetExpires = new Date(Date.now() + 10 * 60 * 1000);
     return resetToken;
   };
 
-// Define and export User model
 export const User = mongoose.model<IUserModel>("User", userSchema);
 export default User;

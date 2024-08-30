@@ -1,11 +1,15 @@
 import User from "../Models/user.model";
 import Job, { JobStatus } from "../Models/job.model";
 import { Request, Response } from "express";
+import { GenericResponseType } from "../Schemas/genericResponse.schema";
+import { AddJobReqBody, showAllClientJobsResBody } from "../Schemas/job.schema";
 
-const addJob = async (req: Request, res: Response) => {
+const addJob = async (
+  req: Request<any, GenericResponseType, AddJobReqBody>,
+  res: Response<GenericResponseType>,
+) => {
   try {
     const clientId = req.session.user;
-    console.log(clientId);
     const {
       projectName,
       description,
@@ -23,7 +27,9 @@ const addJob = async (req: Request, res: Response) => {
       !bidDuration ||
       !requiredSkills
     ) {
-      return res.status(400).json({ message: "Missing required fields" });
+      return res
+        .status(400)
+        .json({ message: "Missing required fields", success: false });
     }
     const user = await User.findOne({ _id: clientId });
     if (!user) {
@@ -49,24 +55,38 @@ const addJob = async (req: Request, res: Response) => {
       .json({ message: "Project added successfully", success: true });
   } catch (error) {
     console.error("Error adding project:", error);
-    return res.status(500).json({ message: "Internal server error" });
+    return res
+      .status(500)
+      .json({ message: "Internal server error", success: false });
   }
 };
 
-const showAllClientJobs = async (req: Request, res: Response) => {
+const showAllClientJobs = async (
+  req: Request<any, GenericResponseType | showAllClientJobsResBody>,
+  res: Response<GenericResponseType | showAllClientJobsResBody>,
+) => {
   try {
     const clientId = req.session.user;
     const projects = await Job.find({
       deleted: false,
       ClientId: clientId,
+    }).select(
+      "projectName description maxPrice expectedTime bidDuration requiredSkills status bids",
+    );
+    return res.status(200).json({
+      message: "Projects Fetched Successfully",
+      Projects: projects,
+      success: true,
     });
-    return res.status(200).json({ projects });
   } catch (error) {
     console.error("Error showing projects:", error);
-    return res.status(500).json({ message: "Internal server error" });
+    return res
+      .status(500)
+      .json({ message: "Internal server error", success: false });
   }
 };
 
+// TODO: Complete type of this after frontend completes
 const showAllJobs = async (req: Request, res: Response) => {
   try {
     const jobs = await Job.find({ deleted: false });
@@ -201,6 +221,7 @@ const viewProject = async (req: Request, res: Response) => {
       .json({ message: "Internal server error", success: false });
   }
 };
+
 export {
   addJob,
   showAllClientJobs,

@@ -1,6 +1,6 @@
 import mongoose, { Document, Schema } from "mongoose";
 
-// Define interface for the subdocument schema
+// Define interface for the project details subdocument
 export interface IProjectDetails {
   projectName: string;
   projectDescription: string;
@@ -18,16 +18,19 @@ export interface ISocialMediaLinks {
   personalWebsite?: string;
 }
 
-// Define interface for the main schema
-export interface IUserPortfolio {
-  userId: mongoose.Schema.Types.ObjectId;
+// Define interface for the freelancer schema
+export interface IFreelancer {
+  userId: mongoose.Schema.Types.ObjectId; // Reference to the User model
+  bio?: string;
+  skills: mongoose.Schema.Types.ObjectId[]; // Array of skill IDs
   projects: IProjectDetails[];
   socialMediaLinks: ISocialMediaLinks;
-  moneyEarned: Number;
+  moneyEarned: number;
+  profilePicUrl?: string;
 }
 
 // Define interface for the model
-export interface IUserPortfolioModel extends IUserPortfolio, Document {
+export interface IFreelancerModel extends IFreelancer, Document {
   _id: mongoose.Schema.Types.ObjectId;
 }
 
@@ -64,38 +67,56 @@ const projectDetailsSchema: Schema<IProjectDetails> = new Schema(
   { _id: false },
 );
 
-// Define the main schema
-const userPortfolioSchema: Schema<IUserPortfolioModel> = new Schema(
+// Define the schema for social media links
+const socialMediaLinksSchema: Schema<ISocialMediaLinks> = new Schema(
+  {
+    linkedin: {
+      type: String,
+      trim: true,
+    },
+    github: {
+      type: String,
+      trim: true,
+    },
+    twitter: {
+      type: String,
+      trim: true,
+    },
+    personalWebsite: {
+      type: String,
+      trim: true,
+    },
+  },
+  { _id: false },
+);
+
+// Define the main freelancer schema
+const freelancerSchema: Schema<IFreelancerModel> = new Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
       ref: "User",
     },
-
-    projects: [projectDetailsSchema],
-    socialMediaLinks: {
-      linkedin: {
-        type: String,
-        trim: true,
-      },
-      github: {
-        type: String,
-        trim: true,
-      },
-      twitter: {
-        type: String,
-        trim: true,
-      },
-      personalWebsite: {
-        type: String,
-        trim: true,
-      },
+    bio: {
+      type: String,
     },
+    skills: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Skill",
+      },
+    ],
+    projects: [projectDetailsSchema],
+    socialMediaLinks: socialMediaLinksSchema,
     moneyEarned: {
       type: Number,
       default: 0,
       required: true,
+    },
+    profilePicUrl: {
+      type: String,
+      default: "https://default-url.com/default-profile-pic.png",
     },
   },
   {
@@ -104,9 +125,9 @@ const userPortfolioSchema: Schema<IUserPortfolioModel> = new Schema(
   },
 );
 
-// Export the UserPortfolio model
-export const UserPortfolio = mongoose.model<IUserPortfolioModel>(
-  "UserPortfolio",
-  userPortfolioSchema,
+// Export the Freelancer model
+export const Freelancer = mongoose.model<IFreelancerModel>(
+  "Freelancer",
+  freelancerSchema,
 );
-export default UserPortfolio;
+export default Freelancer;

@@ -12,11 +12,25 @@ import {
 import isAuthenticated from "../Middlewares/isAuthenticated";
 import isClient from "../Middlewares/isClient";
 import isFreelancer from "../Middlewares/isFreelancer";
+import { AddJobReqBody, showAllClientJobsResBody } from "../Schemas/job.schema";
+import { GenericResponseType } from "../Schemas/genericResponse.schema";
 
 const router = Router();
 
-router.route("/add").post(isAuthenticated, isClient, addJob);
-router.route("/show").get(isAuthenticated, isClient, showAllClientJobs);
+router
+  .route("/add")
+  .post<any, GenericResponseType, AddJobReqBody>(
+    isAuthenticated,
+    isClient,
+    addJob,
+  );
+router
+  .route("/show")
+  .get<any, GenericResponseType | showAllClientJobsResBody>(
+    isAuthenticated,
+    isClient,
+    showAllClientJobs,
+  );
 router.route("/showall").get(isAuthenticated, showAllJobs);
 router.route("/showavailable").get(isAuthenticated, showAllAvailableJobs);
 router.route("/showexpired").get(isAuthenticated, showExpiredJobs);
