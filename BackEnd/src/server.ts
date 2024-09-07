@@ -59,7 +59,6 @@ app.use(
 
 //Routes import
 import authRoutes from "./Routes/auth.Routes";
-// import userProfileRoutes from "./Routes/userProfile.Routes";
 import jobRoutes from "./Routes/job.Routes";
 import bidRoRoutes from "./Routes/bid.Routes";
 import commonRoutes from "./Routes/common.Routes";
@@ -68,7 +67,6 @@ import mongoose from "mongoose";
 
 //Routes declaration
 app.use("/auth", authRoutes);
-// app.use("/user", userProfileRoutes);
 app.use("/job", jobRoutes);
 app.use("/bid", bidRoRoutes);
 app.use("/common", commonRoutes);

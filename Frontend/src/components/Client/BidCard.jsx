@@ -1,4 +1,4 @@
-import React from 'react';
+// import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 
@@ -13,7 +13,7 @@ const BidCard = ({ bid }) => {
         />
       </Link>
       <div>
-        <Link to={`/freelancer/${bid.freelancerId}`}>
+        <Link to={`/client/freelancer/profile`}>
           <h3 className="text-xl font-semibold text-blue-600 hover:underline">
             {bid.name}
           </h3>

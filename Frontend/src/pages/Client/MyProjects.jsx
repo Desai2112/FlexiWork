@@ -1,25 +1,25 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState } from 'react';
-import axios from 'axios';
-import Navbar from '../../components/Client/Navbar';
-import ProjectCard from '../../components/Client/ProjectCard';
+import { useEffect, useState } from "react";
+import axios from "axios";
+import Navbar from "../../components/Client/Navbar";
+import ProjectCard from "../../components/Client/ProjectCard";
 
 const MyProjects = () => {
   const [myProjects, setMyProjects] = useState([]);
   const [filteredProjects, setFilteredProjects] = useState([]);
-  const [statusFilter, setStatusFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
-  const projectsPerPage = 6; // Number of projects per page
+  const projectsPerPage = 6;
 
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/job/show', { withCredentials: true });
-        console.log(response);
-        setMyProjects(response.data.projects);
-        setFilteredProjects(response.data.projects);
+        const response = await axios.get("http://localhost:5000/job/show", {
+          withCredentials: true,
+        });
+        setMyProjects(response.data.Projects);
+        setFilteredProjects(response.data.Projects);
       } catch (error) {
-        console.error('Error fetching projects:', error);
+        console.error("Error fetching projects:", error);
       }
     };
 
@@ -27,21 +27,25 @@ const MyProjects = () => {
   }, []);
 
   useEffect(() => {
+    const filterProjects = () => {
+      if (statusFilter === "all") {
+        setFilteredProjects(myProjects);
+      } else {
+        setFilteredProjects(
+          myProjects.filter((project) => project.status === statusFilter)
+        );
+      }
+    };
     filterProjects();
   }, [statusFilter, myProjects]);
-
-  const filterProjects = () => {
-    if (statusFilter === 'all') {
-      setFilteredProjects(myProjects);
-    } else {
-      setFilteredProjects(myProjects.filter(project => project.status === statusFilter));
-    }
-  };
 
   // Pagination logic
   const indexOfLastProject = currentPage * projectsPerPage;
   const indexOfFirstProject = indexOfLastProject - projectsPerPage;
-  const currentProjects = filteredProjects.slice(indexOfFirstProject, indexOfLastProject);
+  const currentProjects = filteredProjects.slice(
+    indexOfFirstProject,
+    indexOfLastProject
+  );
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
@@ -54,50 +58,90 @@ const MyProjects = () => {
         <div className="flex flex-col lg:flex-row justify-between items-center mb-6">
           <h1 className="text-2xl font-semibold mb-4 lg:mb-0">My Projects</h1>
           <div className="flex flex-wrap justify-center lg:justify-end space-x-0 lg:space-x-4 space-y-2 lg:space-y-0">
-            <button 
-              className={`px-4 py-2 border rounded ${statusFilter === 'all' ? 'bg-blue-500 text-white' : 'bg-white text-gray-700'}`}
-              onClick={() => setStatusFilter('all')}
+            {/* Filter Buttons */}
+            <button
+              className={`px-4 py-2 border rounded ${
+                statusFilter === "all"
+                  ? "bg-blue-500 text-white"
+                  : "bg-white text-gray-700"
+              }`}
+              onClick={() => setStatusFilter("all")}
             >
               All
             </button>
-            <button 
-              className={`px-4 py-2 border rounded ${statusFilter === 'new' ? 'bg-blue-500 text-white' : 'bg-white text-gray-700'}`}
-              onClick={() => setStatusFilter('new')}
+            <button
+              className={`px-4 py-2 border rounded ${
+                statusFilter === "new"
+                  ? "bg-blue-500 text-white"
+                  : "bg-white text-gray-700"
+              }`}
+              onClick={() => setStatusFilter("new")}
             >
               New
             </button>
-            <button 
-              className={`px-4 py-2 border rounded ${statusFilter === 'ongoing' ? 'bg-blue-500 text-white' : 'bg-white text-gray-700'}`}
-              onClick={() => setStatusFilter('ongoing')}
+            <button
+              className={`px-4 py-2 border rounded ${
+                statusFilter === "ongoing"
+                  ? "bg-blue-500 text-white"
+                  : "bg-white text-gray-700"
+              }`}
+              onClick={() => setStatusFilter("ongoing")}
             >
               Ongoing
             </button>
-            <button 
-              className={`px-4 py-2 border rounded ${statusFilter === 'completed' ? 'bg-blue-500 text-white' : 'bg-white text-gray-700'}`}
-              onClick={() => setStatusFilter('completed')}
+            <button
+              className={`px-4 py-2 border rounded ${
+                statusFilter === "completed"
+                  ? "bg-blue-500 text-white"
+                  : "bg-white text-gray-700"
+              }`}
+              onClick={() => setStatusFilter("completed")}
             >
               Completed
             </button>
-            <button 
-              className={`px-4 py-2 border rounded ${statusFilter === 'expired' ? 'bg-blue-500 text-white' : 'bg-white text-gray-700'}`}
-              onClick={() => setStatusFilter('expired')}
+            <button
+              className={`px-4 py-2 border rounded ${
+                statusFilter === "expired"
+                  ? "bg-blue-500 text-white"
+                  : "bg-white text-gray-700"
+              }`}
+              onClick={() => setStatusFilter("expired")}
             >
               Expired
             </button>
           </div>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
-          {currentProjects.map((project) => (
-            <ProjectCard key={project._id} project={project} />
-          ))}
-        </div>
+  
+        {/* Conditional Rendering for No Projects */}
+        {currentProjects.length === 0 ? (
+          <div className="text-center py-10">
+            <h2 className="text-lg font-medium text-gray-700">
+              No projects found.
+            </h2>
+            <p className="text-gray-500">
+              Try selecting a different filter or add projects.
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
+            {currentProjects.map((project) => (
+              <ProjectCard key={project._id} project={project} />
+            ))}
+          </div>
+        )}
+  
+        {/* Pagination */}
         <div className="flex justify-center mt-6">
           <nav>
             <ul className="flex flex-wrap justify-center space-x-2">
               {Array.from({ length: totalPages }, (_, index) => (
                 <li key={index + 1}>
-                  <button 
-                    className={`px-4 py-2 border rounded ${currentPage === index + 1 ? 'bg-blue-500 text-white' : 'bg-white text-gray-700'}`}
+                  <button
+                    className={`px-4 py-2 border rounded ${
+                      currentPage === index + 1
+                        ? "bg-blue-500 text-white"
+                        : "bg-white text-gray-700"
+                    }`}
                     onClick={() => paginate(index + 1)}
                   >
                     {index + 1}
@@ -110,6 +154,7 @@ const MyProjects = () => {
       </div>
     </div>
   );
+  
 };
 
 export default MyProjects;

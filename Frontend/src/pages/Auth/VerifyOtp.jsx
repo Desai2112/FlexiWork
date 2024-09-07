@@ -61,8 +61,8 @@ const VerifyOtp = () => {
         });
 
         setTimeout(() => {
-          navigate('/user-details', { state: { email, role } });
-        }, 2000); // Delay navigation by 2 seconds to match SweetAlert timing
+          navigate(`/${role}/signup`, { state: { email, role } });
+        }, 2000); 
       }
     } catch (error) {
       toast.error('Error verifying OTP. Please try again.');

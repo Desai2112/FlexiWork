@@ -7,12 +7,12 @@ import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import { useForm, Controller } from "react-hook-form";
 
-const UserDetails = () => {
+const FreelancerSignupPage = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
 
   const email = state?.email || "";
-  const role = state?.role || "";
+  const role = state?.role || "freelancer";
 
   const {
     register,
@@ -30,10 +30,8 @@ const UserDetails = () => {
   const [selectedSkills, setSelectedSkills] = useState([]);
 
   useEffect(() => {
-    if (role === "freelancer") {
-      fetchSkillsOptions();
-    }
-  }, [role]);
+    fetchSkillsOptions();
+  }, []);
 
   const fetchSkillsOptions = async () => {
     try {
@@ -98,18 +96,17 @@ const UserDetails = () => {
     };
 
     try {
-      const endpoint =
-        role === "client"
-          ? "http://localhost:5000/auth/client/signup"
-          : "http://localhost:5000/auth/freelancer/signup";
-      const response = await axios.post(endpoint, userDetails);
+      const response = await axios.post(
+        "http://localhost:5000/auth/freelancer/signup",
+        userDetails
+      );
 
       if (response.status === 201) {
-        toast.success("User details saved successfully.");
-        navigate(`/${role}`);
+        toast.success("Freelancer details saved successfully.");
+        navigate("/freelancer");
       }
     } catch (error) {
-      toast.error("Failed to save user details. Please try again.");
+      toast.error("Failed to save freelancer details. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -120,7 +117,7 @@ const UserDetails = () => {
       <div className="hidden md:flex md:w-1/2 bg-gray-200">
         <img
           src="https://res.cloudinary.com/dgvslio7u/image/upload/v1723302697/gzx6czd1vjihamz8yykt.png"
-          alt="User Details Illustration"
+          alt="Freelancer Details Illustration"
           className="object-cover w-full h-full"
         />
       </div>
@@ -128,10 +125,9 @@ const UserDetails = () => {
       <div className="w-full md:w-1/2 overflow-y-auto bg-white p-4 md:p-8">
         <div className="w-full max-w-md mx-auto">
           <h1 className="text-2xl font-semibold mb-4 text-gray-800 text-center">
-            {role === "client" ? "Client Details" : "Freelancer Details"}
+            Freelancer Details
           </h1>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            {/* Shared Fields */}
             <div>
               <label className="block text-gray-700 mb-1">Name</label>
               <input
@@ -209,72 +205,36 @@ const UserDetails = () => {
               )}
             </div>
 
-            {/* Client Specific Fields */}
-            {role === "client" && (
-              <>
-                <div>
-                  <label className="block text-gray-700 mb-1">Company Name</label>
-                  <input
-                    type="text"
-                    {...register("companyName", {
-                      required: "Company Name is required",
-                    })}
-                    className="border border-gray-300 rounded-lg px-4 py-2 w-full"
+            <div>
+              <label className="block text-gray-700 mb-1">Skills</label>
+              <Controller
+                name="skills"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    isMulti
+                    {...field}
+                    value={selectedSkills}
+                    onChange={(selectedOptions) => {
+                      setSelectedSkills(selectedOptions);
+                      setValue("skills", selectedOptions);
+                    }}
+                    options={skillsOptions}
+                    className="w-full"
+                    classNamePrefix="select"
+                    placeholder="Select your skills"
                   />
-                  {errors.companyName && (
-                    <p className="text-red-500 text-sm">
-                      {errors.companyName.message}
-                    </p>
-                  )}
-                </div>
-                <div>
-                  <label className="block text-gray-700 mb-1">
-                    Company Website
-                  </label>
-                  <input
-                    type="url"
-                    {...register("companyWebsite")}
-                    className="border border-gray-300 rounded-lg px-4 py-2 w-full"
-                  />
-                </div>
-              </>
-            )}
-
-            {/* Freelancer Specific Fields */}
-            {role === "freelancer" && (
-              <>
-                <div>
-                  <label className="block text-gray-700 mb-1">Skills</label>
-                  <Controller
-                    name="skills"
-                    control={control}
-                    render={({ field }) => (
-                      <Select
-                        isMulti
-                        {...field}
-                        value={selectedSkills}
-                        onChange={(selectedOptions) => {
-                          setSelectedSkills(selectedOptions);
-                          setValue("skills", selectedOptions);
-                        }}
-                        options={skillsOptions}
-                        className="w-full"
-                        classNamePrefix="select"
-                        placeholder="Select your skills"
-                      />
-                    )}
-                  />
-                </div>
-                <div>
-                  <label className="block text-gray-700 mb-1">Bio</label>
-                  <textarea
-                    {...register("bio")}
-                    className="border border-gray-300 rounded-lg px-4 py-2 w-full"
-                    rows={4}
-                  ></textarea>
-                </div>
-              </>
-            )}
+                )}
+              />
+            </div>
+            <div>
+              <label className="block text-gray-700 mb-1">Bio</label>
+              <textarea
+                {...register("bio")}
+                className="border border-gray-300 rounded-lg px-4 py-2 w-full"
+                rows={4}
+              ></textarea>
+            </div>
 
             <div>
               <label className="block text-gray-700 mb-1">Profile Picture</label>
@@ -301,4 +261,4 @@ const UserDetails = () => {
   );
 };
 
-export default UserDetails;
+export default FreelancerSignupPage;

@@ -1,5 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 import { IUser, userRole } from "../Models/user.model";
+import { StrongPasswordOptions } from "validator";
 
 export type loginBodyType = { email: string; password: string };
 
@@ -41,14 +42,25 @@ export type VerifyPasstokenReqBody = {
   token: string;
 };
 
-export type AddUserReqBody = {
+export type AddFreelancerdetailsReqBody = {
   name: string;
   email: string;
-  role: userRole;
   password: string;
-  mobileNo: string;
-  companyName?: string;
-  skills: mongoose.Schema.Types.ObjectId[];
-  bio: string;
+  role: userRole.freelancer;
   profilePicUrl: string;
+  bio: string;
+  skills: mongoose.Schema.Types.ObjectId[];
+  mobileNo: string;
+};
+
+export type addCompanydetailsReqBody = {
+  name: string;
+  email: string;
+  password: string;
+  role: userRole.client;
+  logoUrl: string;
+  description: string;
+  address: string;
+  contactNumber: string;
+  companyWebsite?: string;
 };

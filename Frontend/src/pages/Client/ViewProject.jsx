@@ -1,9 +1,11 @@
-import  { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
-import Navbar from '../../components/Client/Navbar'; // Ensure Navbar component is imported correctly
-import { useNavigate, useParams } from 'react-router-dom';
-import axios from 'axios';
+/* eslint-disable no-unreachable */
+import { useEffect, useState } from "react";
+import PropTypes from "prop-types";
+import Navbar from "../../components/Client/Navbar"; // Ensure Navbar component is imported correctly
+import { useNavigate, useParams } from "react-router-dom";
+import axios from "axios";
 import { IoMdArrowRoundBack } from "react-icons/io";
+import { TailSpin } from "react-loader-spinner";
 
 const ViewProjectPage = () => {
   const { id } = useParams();
@@ -13,26 +15,45 @@ const ViewProjectPage = () => {
   useEffect(() => {
     const fetchProjectDetails = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/job/${id}`, { withCredentials: true });
+        const response = await axios.get(`http://localhost:5000/job/${id}`, {
+          withCredentials: true,
+        });
         setProjectData(response.data.project);
       } catch (error) {
-        console.error('Error fetching project details:', error);
+        console.error("Error fetching project details:", error);
       }
     };
 
     fetchProjectDetails();
   }, [id]); // Depend on 'id' to refetch if it changes
 
+  const capitalizeFirstLetter = (string) => {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  };
+
   const handleBackClick = () => {
     navigate(-1); // Go back to the previous page
   };
 
   const handleViewAllBids = () => {
-    navigate(`/client/project/${id}/bids`); // Redirect to the detailed bids page
+    navigate(`/client/project/${id}/bids`);
   };
 
   if (!projectData) {
-    return <div>Loading...</div>; // Handle loading state
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <TailSpin
+          visible={true}
+          height="80"
+          width="80"
+          color="#2563EB"
+          ariaLabel="tail-spin-loading"
+          radius="1"
+          wrapperStyle={{}}
+          wrapperClass=""
+        />
+      </div>
+    ); // Correctly return the loading spinner
   }
 
   return (
@@ -48,18 +69,30 @@ const ViewProjectPage = () => {
         </button>
 
         <div className="bg-white shadow-lg rounded-lg p-6 mb-6">
-          <h1 className="text-3xl font-semibold mb-4">{projectData.projectName}</h1>
-          <p className="text-gray-700 mb-4"><strong>Description:</strong> {projectData.description}</p>
+          <h1 className="text-3xl font-semibold mb-4">
+            {projectData.projectName}
+          </h1>
+          <p className="text-gray-700 mb-4">
+            <strong>Description:</strong> {projectData.description}
+          </p>
           <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-4">
             <div className="flex flex-col lg:flex-row lg:items-center mb-4 lg:mb-0">
               <div className="text-lg font-medium mr-4">Status:</div>
-              <div className={`px-3 py-1 rounded-full text-white ${
-                projectData.status === "expired" ? "bg-gray-500" : "bg-green-500"
-              }`}>{projectData.status}</div>
+              <div
+                className={`px-3 py-1 rounded-full text-white ${
+                  capitalizeFirstLetter(projectData.status) === "Expired"
+                    ? "bg-gray-500"
+                    : "bg-green-500"
+                }`}
+              >
+                {capitalizeFirstLetter(projectData.status)}
+              </div>
             </div>
             <div className="flex flex-col lg:flex-row lg:items-center mb-4 lg:mb-0">
               <div className="text-lg font-medium mr-4">Budget:</div>
-              <div className="text-lg font-semibold">${projectData.maxPrice.toLocaleString()}</div>
+              <div className="text-lg font-semibold">
+                ${projectData.maxPrice.toLocaleString()}
+              </div>
             </div>
             <div className="flex flex-col lg:flex-row lg:items-center">
               <div className="text-lg font-medium mr-4">Bid Ends:</div>
@@ -71,8 +104,10 @@ const ViewProjectPage = () => {
           <div className="border-t border-gray-300 mt-6 pt-4">
             <h2 className="text-2xl font-semibold mb-4">Required Skills</h2>
             <ul className="list-disc pl-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {projectData.requiredSkills.map(skill => (
-                <li key={skill._id} className="text-gray-700">{skill.skill}</li>
+              {projectData.requiredSkills.map((skill) => (
+                <li key={skill._id} className="text-gray-700">
+                  {skill.skill}
+                </li>
               ))}
             </ul>
           </div>
@@ -83,12 +118,22 @@ const ViewProjectPage = () => {
           {projectData.bids.length > 0 ? (
             <div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
-                {projectData.bids.map(bid => (
-                  <div key={bid._id} className="bg-gray-50 p-4 rounded-lg shadow-md">
+                {projectData.bids.map((bid) => (
+                  <div
+                    key={bid._id}
+                    className="bg-gray-50 p-4 rounded-lg shadow-md"
+                  >
                     <h3 className="text-xl font-semibold mb-2">{bid.name}</h3>
-                    <p className="text-gray-600 mb-2"><strong>Freelancer:</strong> {bid.freelancerName}</p>
-                    <p className="text-gray-600 mb-2"><strong>Bid Amount:</strong> ${bid.bidAmount.toLocaleString()}</p>
-                    <p className="text-gray-800 mb-2"><strong>Description:</strong> {bid.description}</p>
+                    <p className="text-gray-600 mb-2">
+                      <strong>Freelancer:</strong> {bid.freelancerName}
+                    </p>
+                    <p className="text-gray-600 mb-2">
+                      <strong>Bid Amount:</strong> $
+                      {bid.bidAmount.toLocaleString()}
+                    </p>
+                    <p className="text-gray-800 mb-2">
+                      <strong>Description:</strong> {bid.description}
+                    </p>
                   </div>
                 ))}
               </div>
@@ -100,17 +145,30 @@ const ViewProjectPage = () => {
               </button>
             </div>
           ) : (
-            <p className="text-gray-700">No bids have been placed for this project yet.</p>
+            <p className="text-gray-700">
+              No bids have been placed for this project yet.
+            </p>
           )}
         </div>
 
         <div className="bg-white shadow-lg rounded-lg p-6">
           <h2 className="text-lg font-semibold mb-4">Contact Us</h2>
           <p className="text-gray-700 mb-4">
-            If you have any doubts or need further information, please reach us at:
+            If you have any doubts or need further information, please reach us
+            at:
           </p>
-          <p className="text-gray-700 mb-4"><strong>Company:</strong> {projectData.ClientId.companyName}</p>
-          <p className="text-gray-700 mb-4"><strong>Email:</strong> <a href={`mailto:${projectData.ClientId.email}`} className="text-blue-500 hover:underline">{projectData.ClientId.email}</a></p>
+          <p className="text-gray-700 mb-4">
+            <strong>Company:</strong> {projectData.ClientId.companyName}
+          </p>
+          <p className="text-gray-700 mb-4">
+            <strong>Email:</strong>{" "}
+            <a
+              href={`mailto:${projectData.ClientId.email}`}
+              className="text-blue-500 hover:underline"
+            >
+              {projectData.ClientId.email}
+            </a>
+          </p>
         </div>
       </div>
     </div>
@@ -131,13 +189,13 @@ ViewProjectPage.propTypes = {
     requiredSkills: PropTypes.arrayOf(
       PropTypes.shape({
         _id: PropTypes.string.isRequired,
-        skill: PropTypes.string.isRequired
+        skill: PropTypes.string.isRequired,
       })
     ).isRequired,
     ClientId: PropTypes.shape({
       _id: PropTypes.string.isRequired,
       email: PropTypes.string.isRequired,
-      companyName: PropTypes.string.isRequired
+      companyName: PropTypes.string.isRequired,
     }).isRequired,
     createdAt: PropTypes.string.isRequired,
     updatedAt: PropTypes.string.isRequired,
@@ -145,12 +203,12 @@ ViewProjectPage.propTypes = {
       PropTypes.shape({
         _id: PropTypes.string.isRequired,
         name: PropTypes.string.isRequired,
-        freelancerName: PropTypes.string.isRequired, // Added freelancerName
+        freelancerName: PropTypes.string.isRequired,
         bidAmount: PropTypes.number.isRequired,
-        description: PropTypes.string.isRequired
+        description: PropTypes.string.isRequired,
       })
-    ).isRequired
-  })
+    ).isRequired,
+  }),
 };
 
 export default ViewProjectPage;

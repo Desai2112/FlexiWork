@@ -1,6 +1,5 @@
 import mongoose, { Document, Schema } from "mongoose";
 
-// Define interface for the project details subdocument
 export interface IProjectDetails {
   projectName: string;
   projectDescription: string;
@@ -10,7 +9,6 @@ export interface IProjectDetails {
   projectEnd: string;
 }
 
-// Define interface for the social media links
 export interface ISocialMediaLinks {
   linkedin?: string;
   github?: string;
@@ -18,11 +16,11 @@ export interface ISocialMediaLinks {
   personalWebsite?: string;
 }
 
-// Define interface for the freelancer schema
 export interface IFreelancer {
-  userId: mongoose.Schema.Types.ObjectId; // Reference to the User model
+  userId: mongoose.Schema.Types.ObjectId;
   bio?: string;
-  skills: mongoose.Schema.Types.ObjectId[]; // Array of skill IDs
+  mobileNo: string;
+  skills: mongoose.Schema.Types.ObjectId[];
   projects: IProjectDetails[];
   socialMediaLinks: ISocialMediaLinks;
   moneyEarned: number;
@@ -90,7 +88,6 @@ const socialMediaLinksSchema: Schema<ISocialMediaLinks> = new Schema(
   { _id: false },
 );
 
-// Define the main freelancer schema
 const freelancerSchema: Schema<IFreelancerModel> = new Schema(
   {
     userId: {
@@ -114,6 +111,10 @@ const freelancerSchema: Schema<IFreelancerModel> = new Schema(
       default: 0,
       required: true,
     },
+    mobileNo: {
+      type: String,
+      required: true,
+    },
     profilePicUrl: {
       type: String,
       default: "https://default-url.com/default-profile-pic.png",
@@ -130,4 +131,3 @@ export const Freelancer = mongoose.model<IFreelancerModel>(
   "Freelancer",
   freelancerSchema,
 );
-export default Freelancer;

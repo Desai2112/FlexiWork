@@ -11,6 +11,7 @@ export interface ICompany {
   logoUrl?: string;
   createdAt: Date;
   updatedAt: Date;
+  userId:mongoose.Schema.Types.ObjectId;
 }
 
 export interface ICompanyModel extends ICompany, Document {
@@ -46,6 +47,11 @@ const companySchema: Schema<ICompanyModel> = new Schema(
     logoUrl: {
       type: String,
       default: "https://default-url.com/default-logo.png",
+    },
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: "User",
     },
   },
   {

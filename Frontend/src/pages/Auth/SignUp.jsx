@@ -16,30 +16,32 @@ const SignUp = () => {
     setRole(e.target.value);
   };
 
-  const handleSendOtp = (e) => {
+  const handleSendOtp = async (e) => {
     e.preventDefault();
     if (!email) {
       toast.error("Please enter email address!");
       return;
     }
-    // Send request to server
-    axios
-      .post("http://localhost:5000/auth/send-otp", { email, role })
-      .then(() => {
-        toast.success("OTP has been sent to your email.", {
-          duration: 2000, 
-        });
-
-        setTimeout(() => {
-          navigate("/verify-otp", { state: { email, role } });
-        }, 2000);
-      })
-      .catch((error) => {
-        // Show toast for error
-        console.log(error);
-        toast.error("Failed to send OTP. Please try again later.");
+    
+    try {
+      // Send request to server
+      await axios.post("http://localhost:5000/auth/send-otp", { email, role });
+      
+      toast.success("OTP has been sent to your email.", {
+        duration: 2000,
       });
+      
+      setTimeout(() => {
+        navigate("/verify-otp", { state: { email, role } });
+      }, 2000);
+    } catch (error) {
+      // Show toast for error
+      console.error(error);
+      const errorMessage = error.response?.data?.message || error.message || "An error occurred.";
+      toast.error(errorMessage);
+    }
   };
+  
 
   return (
     <>

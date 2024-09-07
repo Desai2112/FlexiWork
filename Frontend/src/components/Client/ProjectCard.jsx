@@ -25,8 +25,7 @@ const ProjectCard = ({ project }) => {
         </div>
       </div>
       <div className="flex justify-between items-center text-sm text-gray-700 mb-4">
-        <span className="font-medium">Bids: {/* You might want to include bid count here if available */}</span>
-        <span className={`text-xs ${project.valueClass || 'text-gray-600'}`}>{`Status: ${project.status}`}</span>
+        <span className="font-medium">Bids: {project.bids.length}</span>
       </div>
       <div className="text-right">
         <a 
@@ -47,14 +46,17 @@ ProjectCard.propTypes = {
     status: PropTypes.string.isRequired,
     maxPrice: PropTypes.number.isRequired,
     expectedTime: PropTypes.number.isRequired,
-    bidDuration: PropTypes.number, // Optional, if needed
-    bidEnds: PropTypes.string, // Optional, if needed
-    requiredSkills: PropTypes.arrayOf(PropTypes.string), // Optional, if needed
-    ClientId: PropTypes.string, // Optional, if needed
-    createdAt: PropTypes.string, // Optional, if needed
-    updatedAt: PropTypes.string, // Optional, if needed
+    bids: PropTypes.arrayOf(
+      PropTypes.shape({
+        _id: PropTypes.string.isRequired,
+        name: PropTypes.string.isRequired,
+        freelancerName: PropTypes.string.isRequired,
+        bidAmount: PropTypes.number.isRequired,
+        description: PropTypes.string.isRequired,
+      })
+    ).isRequired,
+    _id: PropTypes.string.isRequired,
     valueClass: PropTypes.string,
-    _id:PropTypes.string, // Optional, if needed
   }).isRequired,
 };
 

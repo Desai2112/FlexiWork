@@ -7,31 +7,22 @@ export enum userRole {
   freelancer = "freelancer",
 }
 
-// Define User Interface
 export interface IUser {
   name: string;
   email: string;
   password: string;
   role: userRole;
-  bio?: string;
-  deleted: boolean;
-  companyName?: string;
-  createdAt: Date;
-  updatedAt: Date;
   passwordResetToken?: string;
   passwordResetExpires?: Date;
   emailVerified: boolean;
   profileCompleted: boolean;
-  profilePicUrl: string;
-  skills: mongoose.Schema.Types.ObjectId[];
-  mobileNo: string;
+  userDetails: mongoose.Types.ObjectId;
 }
 
-// Define User Model Interface
 export interface IUserModel extends IUser, Document {
   comparePassword(password: string): Promise<boolean>;
   createPasswordResetToken(): Promise<string>;
-  createOTP(): Promise<string>;
+  getUserDetailsModel(): string; // Method to get the reference model
   _id: mongoose.Schema.Types.ObjectId;
 }
 
@@ -40,6 +31,7 @@ const userSchema: Schema<IUserModel> = new Schema(
   {
     name: {
       type: String,
+      required: true,
     },
     email: {
       type: String,
@@ -52,14 +44,6 @@ const userSchema: Schema<IUserModel> = new Schema(
     role: {
       type: String,
       enum: userRole,
-      requires: true,
-    },
-    bio: {
-      type: String,
-    },
-    deleted: {
-      type: Boolean,
-      default: false,
       required: true,
     },
     passwordResetToken: {
@@ -68,36 +52,19 @@ const userSchema: Schema<IUserModel> = new Schema(
     passwordResetExpires: {
       type: Date,
     },
-    profilePicUrl: {
-      type: String,
-      default:
-        "https://res.cloudinary.com/dgvslio7u/image/upload/v1724904582/bj2mfbczdzzm03jxcjmt.png",
-    },
     emailVerified: {
       type: Boolean,
       default: false,
-      required: true,
-    },
-    mobileNo: {
-      type: String,
-      required: true,
     },
     profileCompleted: {
       type: Boolean,
       default: false,
-      required: true,
     },
-    companyName: {
-      type: String,
+    userDetails: {
+      type: mongoose.Schema.Types.ObjectId,
+      refPath: "userDetailsModel", // Dynamically sets the reference model
     },
-    skills: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Skill",
-      },
-    ],
   },
-
   {
     versionKey: false,
     timestamps: true,
@@ -113,6 +80,7 @@ userSchema.pre<IUserModel>("save", async function (next) {
   next();
 });
 
+// Method to compare passwords
 userSchema.methods.comparePassword = async function (
   password: string,
 ): Promise<boolean> {
@@ -120,6 +88,7 @@ userSchema.methods.comparePassword = async function (
   return bcrypt.compare(password, user.password);
 };
 
+// Method to create a password reset token
 userSchema.methods.createPasswordResetToken =
   async function (): Promise<string> {
     const user = this as IUserModel;
@@ -129,6 +98,11 @@ userSchema.methods.createPasswordResetToken =
     user.passwordResetExpires = new Date(Date.now() + 10 * 60 * 1000);
     return resetToken;
   };
+
+// Method to get the correct reference model based on role
+userSchema.virtual("userDetailsModel").get(function () {
+  return this.role === userRole.client ? "Company" : "Freelancer";
+});
 
 export const User = mongoose.model<IUserModel>("User", userSchema);
 export default User;

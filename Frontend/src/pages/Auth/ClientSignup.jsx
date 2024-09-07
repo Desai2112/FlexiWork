@@ -1,56 +1,36 @@
-import { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import Select from "react-select";
+import { useState,useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 
-const UserDetails = () => {
+const ClientSignupPage = () => {
   const { state } = useLocation();
+
   const navigate = useNavigate();
-
-  const email = state?.email || "";
-  const role = state?.role || "";
-
-  const {
-    register,
-    handleSubmit,
-    control,
-    setValue,
-    formState: { errors },
-  } = useForm();
-
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [profilePic, setProfilePic] = useState(null);
   const [profilePicUrl, setProfilePicUrl] = useState("");
-  const [skillsOptions, setSkillsOptions] = useState([]);
-  const [selectedSkills, setSelectedSkills] = useState([]);
 
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
+  const email = state?.email;
+  const role = state?.role;
   useEffect(() => {
-    if (role === "freelancer") {
-      fetchSkillsOptions();
+    if (!email && !role) {
+      navigate("/signup");
+    } else if (role !== "client") {
+      navigate("/signup");
     }
-  }, [role]);
-
-  const fetchSkillsOptions = async () => {
-    try {
-      const response = await axios.get("http://localhost:5000/common/skills");
-      if (Array.isArray(response.data.skills)) {
-        const options = response.data.skills.map((skill) => ({
-          value: skill._id,
-          label: skill.skill,
-        }));
-        setSkillsOptions(options);
-      } else {
-        toast.error("Unexpected data format received.");
-      }
-    } catch (error) {
-      toast.error("Failed to load skills.");
-    }
-  };
+  }, [email, navigate, role]);
 
   const uploadImage = async (file) => {
     const formData = new FormData();
@@ -91,22 +71,22 @@ const UserDetails = () => {
 
     const userDetails = {
       ...data,
-      email,
-      role,
-      profilePicUrl: imageUrl,
-      skills: selectedSkills.map((skill) => skill.value),
+      contactNumber: data.mobileNo,
+      email:email,
+      logoUrl: imageUrl,
+      role:role,
     };
 
     try {
-      const endpoint =
-        role === "client"
-          ? "http://localhost:5000/auth/client/signup"
-          : "http://localhost:5000/auth/freelancer/signup";
-      const response = await axios.post(endpoint, userDetails);
+      console.log(userDetails);
+      const response = await axios.post(
+        "http://localhost:5000/auth/client/signup",
+        userDetails
+      );
 
       if (response.status === 201) {
         toast.success("User details saved successfully.");
-        navigate(`/${role}`);
+        navigate("/client");
       }
     } catch (error) {
       toast.error("Failed to save user details. Please try again.");
@@ -125,15 +105,14 @@ const UserDetails = () => {
         />
       </div>
 
-      <div className="w-full md:w-1/2 overflow-y-auto bg-white p-4 md:p-8">
+      <div className="w-full md:w-1/2 bg-white p-4 md:p-8 overflow-y-auto">
         <div className="w-full max-w-md mx-auto">
           <h1 className="text-2xl font-semibold mb-4 text-gray-800 text-center">
-            {role === "client" ? "Client Details" : "Freelancer Details"}
+            Client Details
           </h1>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            {/* Shared Fields */}
             <div>
-              <label className="block text-gray-700 mb-1">Name</label>
+              <label className="block text-gray-700 mb-1">Company Name</label>
               <input
                 type="text"
                 {...register("name", { required: "Name is required" })}
@@ -151,13 +130,18 @@ const UserDetails = () => {
                 readOnly
                 className="border border-gray-300 rounded-lg px-4 py-2 w-full bg-gray-100"
               />
+              {errors.email && (
+                <p className="text-red-500 text-sm">{errors.email.message}</p>
+              )}
             </div>
             <div>
               <label className="block text-gray-700 mb-1">Password</label>
               <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
-                  {...register("password", { required: "Password is required" })}
+                  {...register("password", {
+                    required: "Password is required",
+                  })}
                   className="border border-gray-300 rounded-lg px-4 py-2 w-full"
                 />
                 <button
@@ -173,7 +157,9 @@ const UserDetails = () => {
                 </button>
               </div>
               {errors.password && (
-                <p className="text-red-500 text-sm">{errors.password.message}</p>
+                <p className="text-red-500 text-sm">
+                  {errors.password.message}
+                </p>
               )}
             </div>
             <div>
@@ -208,80 +194,42 @@ const UserDetails = () => {
                 </p>
               )}
             </div>
-
-            {/* Client Specific Fields */}
-            {role === "client" && (
-              <>
-                <div>
-                  <label className="block text-gray-700 mb-1">Company Name</label>
-                  <input
-                    type="text"
-                    {...register("companyName", {
-                      required: "Company Name is required",
-                    })}
-                    className="border border-gray-300 rounded-lg px-4 py-2 w-full"
-                  />
-                  {errors.companyName && (
-                    <p className="text-red-500 text-sm">
-                      {errors.companyName.message}
-                    </p>
-                  )}
-                </div>
-                <div>
-                  <label className="block text-gray-700 mb-1">
-                    Company Website
-                  </label>
-                  <input
-                    type="url"
-                    {...register("companyWebsite")}
-                    className="border border-gray-300 rounded-lg px-4 py-2 w-full"
-                  />
-                </div>
-              </>
-            )}
-
-            {/* Freelancer Specific Fields */}
-            {role === "freelancer" && (
-              <>
-                <div>
-                  <label className="block text-gray-700 mb-1">Skills</label>
-                  <Controller
-                    name="skills"
-                    control={control}
-                    render={({ field }) => (
-                      <Select
-                        isMulti
-                        {...field}
-                        value={selectedSkills}
-                        onChange={(selectedOptions) => {
-                          setSelectedSkills(selectedOptions);
-                          setValue("skills", selectedOptions);
-                        }}
-                        options={skillsOptions}
-                        className="w-full"
-                        classNamePrefix="select"
-                        placeholder="Select your skills"
-                      />
-                    )}
-                  />
-                </div>
-                <div>
-                  <label className="block text-gray-700 mb-1">Bio</label>
-                  <textarea
-                    {...register("bio")}
-                    className="border border-gray-300 rounded-lg px-4 py-2 w-full"
-                    rows={4}
-                  ></textarea>
-                </div>
-              </>
-            )}
-
             <div>
-              <label className="block text-gray-700 mb-1">Profile Picture</label>
+              <label className="block text-gray-700 mb-1">Address</label>
+              <input
+                type="text"
+                {...register("address", { required: "Address is required" })}
+                className="border border-gray-300 rounded-lg px-4 py-2 w-full"
+              />
+              {errors.address && (
+                <p className="text-red-500 text-sm">{errors.address.message}</p>
+              )}
+            </div>
+            <div>
+              <label className="block text-gray-700 mb-1">Description</label>
+              <textarea
+                {...register("description", {
+                  required: "Description is required",
+                })}
+                className="border border-gray-300 rounded-lg px-4 py-2 w-full"
+                rows="3"
+              />
+              {errors.description && (
+                <p className="text-red-500 text-sm">
+                  {errors.description.message}
+                </p>
+              )}
+            </div>
+            <div>
+              <label className="block text-gray-700 mb-1">
+                Profile Picture
+              </label>
               <input
                 type="file"
                 accept="image/*"
-                onChange={(e) => setProfilePic(e.target.files[0])}
+                onChange={(e) =>
+                  setProfilePic(e.target.files ? e.target.files[0] : null)
+                }
                 className="border border-gray-300 rounded-lg px-4 py-2 w-full"
               />
             </div>
@@ -301,4 +249,4 @@ const UserDetails = () => {
   );
 };
 
-export default UserDetails;
+export default ClientSignupPage;

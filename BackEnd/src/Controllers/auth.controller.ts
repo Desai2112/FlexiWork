@@ -1,8 +1,9 @@
-import { User } from "../Models/user.model";
+import { User, userRole } from "../Models/user.model";
 import { Request, Response, NextFunction } from "express";
 import validator from "validator";
 import {
-  AddUserReqBody,
+  addCompanydetailsReqBody,
+  AddFreelancerdetailsReqBody,
   loginBodyType,
   loginResponseBodyType,
   MeResponseBodyType,
@@ -17,6 +18,8 @@ import { sendOTPEmail } from "../Configurations/sendOtpMail";
 import { Verification } from "../Models/verification.model";
 import bcrypt from "bcrypt";
 import { sendPasswordResetEmail } from "../Configurations/sendResetPass";
+import { Freelancer } from "../Models/freelancer.model";
+import { Company } from "../Models/company.model";
 
 const sendOtp = async (
   req: Request<any, GenericResponseType, SendOTPReqBodyType>,
@@ -98,15 +101,10 @@ const verifyOtp = async (
       });
     } else {
       const verified = user.verifyOTP(otp);
-
       if (verified) {
-        user.emailVerified = true;
-        await User.create({
-          email: user.email.toLowerCase(),
-          role: user.role,
+        await user.updateOne({
           emailVerified: true,
         });
-        await Verification.deleteOne({ email: email });
         return res.status(200).json({
           message: "OTP is verified.",
           success: true,
@@ -127,70 +125,238 @@ const verifyOtp = async (
   }
 };
 
-const addUser = async (
-  req: Request<any, GenericResponseType, AddUserReqBody>,
+const addCompanyDetails = async (
+  req: Request<any, GenericResponseType, addCompanydetailsReqBody>,
+  res: Response<GenericResponseType>,
+) => {
+  const {
+    name,
+    email,
+    password,
+    role,
+    logoUrl,
+    description,
+    address,
+    contactNumber,
+    companyWebsite,
+  } = req.body;
+  // console.log(req.body);
+  // Check for missing fields
+  if (
+    !name ||
+    !email ||
+    !password ||
+    !role ||
+    !logoUrl ||
+    !description ||
+    !address ||
+    !contactNumber
+  ) {
+    return res.status(400).json({
+      message: "All fields are required",
+      success: false,
+    });
+  }
+
+  // Verify if the email is already verified
+  const verifiedEmail = await Verification.findOne({ email });
+  if (!verifiedEmail || !verifiedEmail.emailVerified) {
+    return res.status(400).json({
+      message: "Email is not verified",
+      success: false,
+    });
+  }
+
+  // Validate the contact number
+  if (!validator.isMobilePhone(contactNumber, "any")) {
+    return res.status(400).json({
+      message: "Contact number is not valid",
+      success: false,
+    });
+  }
+
+  // Check if the role is correct
+  if (role !== userRole.client) {
+    return res.status(400).json({
+      message:
+        "Invalid role. Only companies can be added through this endpoint.",
+      success: false,
+    });
+  }
+
+  // Check if a user with the same email already exists
+  const existingCompany = await User.findOne({ email });
+  if (existingCompany) {
+    return res.status(400).json({
+      message: "A company with this email already exists",
+      success: false,
+    });
+  }
+
+  // Hash the password before saving
+  // const hashedPassword = await bcrypt.hash(password, 10);
+
+  // Create the user
+  const user = await User.create({
+    name,
+    email,
+    password,
+    role,
+    profileCompleted: false,
+  });
+
+  if (!user) {
+    return res.status(500).json({
+      message: "Failed to create user",
+      success: false,
+    });
+  }
+
+  // Create the company details
+  const company = await Company.create({
+    userId: user._id,
+    name,
+    email,
+    description,
+    address,
+    contactNumber,
+    logoUrl,
+    website: companyWebsite || "",
+  });
+
+  if (!company) {
+    // Rollback: Delete user if company creation fails
+    await User.findByIdAndDelete(user._id);
+    return res.status(500).json({
+      message: "Failed to create company details",
+      success: false,
+    });
+  }
+
+  // Update the user with the company details
+  await user.updateOne({
+    profileCompleted: true,
+    userDetails: company._id,
+  });
+
+  // Set the session with the newly created user's ID
+  req.session.user = user._id;
+  console.log(req.session.user);
+  return res.status(201).json({
+    message: "Company added successfully",
+    success: true,
+  });
+};
+
+const addFreelancerDetails = async (
+  req: Request<any, GenericResponseType, AddFreelancerdetailsReqBody>,
   res: Response<GenericResponseType>,
 ) => {
   try {
     const {
       name,
       email,
-      role,
       password,
-      mobileNo,
-      companyName,
-      skills,
-      bio,
+      role,
       profilePicUrl,
+      bio,
+      skills,
+      mobileNo,
     } = req.body;
 
-    // Validate required fields
-    if (!name || !password || !bio || !email || !mobileNo || !role) {
+    if (
+      !name ||
+      !email ||
+      !password ||
+      !role ||
+      !profilePicUrl ||
+      !bio ||
+      !skills.length ||
+      !mobileNo
+    ) {
       return res.status(400).json({
-        message: "All the fields are required.",
+        message: "All fields are required",
+        success: false,
+      });
+    }
+    const verifiedEmail = await Verification.findOne({ email: email });
+    if (verifiedEmail && !verifiedEmail.emailVerified) {
+      return res.status(400).json({
+        message: "Email is not verified",
         success: false,
       });
     }
 
-    // Validate role-specific fields
-    if (role === "freelancer" && !skills) {
+    if (!validator.isMobilePhone(mobileNo)) {
       return res.status(400).json({
-        message: "Skills are required for freelancer.",
-        success: false,
-      });
-    } else if (role === "client" && !companyName) {
-      return res.status(400).json({
-        message: "Company name is required for client.",
+        message: "Mobile number is not valid",
         success: false,
       });
     }
 
-    if (!validator.isLength(password, { min: 10 })) {
+    // Ensure the role is freelancer
+    if (role !== userRole.freelancer) {
       return res.status(400).json({
-        message: "Password must be at least 10 characters long.",
+        message:
+          "Invalid role. Only freelancers can be added through this endpoint.",
         success: false,
       });
     }
-    let hpassword = await bcrypt.hash(password, 10);
 
-    const updateData: any = {
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({
+        message: "User with this email already exists",
+        success: false,
+      });
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create user
+    const user = await User.create({
       name,
-      password: hpassword,
-      mobileNo: mobileNo,
-      bio,
-      profilePicUrl,
-      profileCompleted: true,
-      ...(role === "client" ? { companyName } : { skills }),
-    };
-
-    const user = await User.findOneAndUpdate({ email }, updateData, {
-      new: true,
-      upsert: true,
+      email,
+      password: hashedPassword,
+      role,
+      profileCompleted: false, // Set initially to false
     });
 
+    // Ensure user creation was successful
+    if (!user) {
+      return res.status(500).json({
+        message: "Failed to create user",
+        success: false,
+      });
+    }
+
+    // Create freelancer details
+    const freelancer = await Freelancer.create({
+      userId: user._id,
+      bio,
+      skills,
+      mobileNo,
+      profilePicUrl,
+    });
+
+    if (!freelancer) {
+      await User.findByIdAndDelete(user._id);
+      return res.status(500).json({
+        message: "Failed to create freelancer details",
+        success: false,
+      });
+    }
+
+    // Update user with freelancer details
+    await user.updateOne({
+      profileCompleted: true,
+      userDetails: freelancer._id,
+    });
     req.session.user = user._id;
-    return res.status(200).json({
-      message: "User created or updated successfully.",
+    return res.status(201).json({
+      message: "Freelancer added successfully",
       success: true,
     });
   } catch (error) {
@@ -252,7 +418,8 @@ const getDetails = async (
   res: Response<MeResponseBodyType | GenericResponseType>,
 ) => {
   try {
-    const user = await User.findById(req.session.user);
+    // console.log(req.session.user);
+    const user = await User.findById(req.session.user).populate("userDetails");
     if (!user) {
       return res.status(404).json({
         message: "User not found",
@@ -261,7 +428,7 @@ const getDetails = async (
     }
     res.status(200).json({
       message: "User found",
-      user,
+      user: user,
       success: true,
     });
   } catch (error) {
@@ -415,7 +582,8 @@ const verifyPasstoken = async (
 };
 
 export {
-  addUser,
+  addCompanyDetails,
+  addFreelancerDetails,
   loginUser,
   getDetails,
   logOut,

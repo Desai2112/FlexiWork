@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
-  addUser,
+  addCompanyDetails,
+  addFreelancerDetails,
   getDetails,
   loginUser,
   logOut,
@@ -19,13 +20,18 @@ import {
   ResetPasswordEmailReqBodyType,
   ResetPasswordReqBodyType,
   VerifyPasstokenReqBody,
-  AddUserReqBody,
+  AddFreelancerdetailsReqBody,
 } from "../Schemas/auth.schema";
 import { GenericResponseType } from "../Schemas/genericResponse.schema";
 
 const router = Router();
 
-router.route("/signup").post<any, GenericResponseType, AddUserReqBody>(addUser);
+router.route("/client/signup").post(addCompanyDetails);
+router
+  .route("/freelancer/signup")
+  .post<any, GenericResponseType, AddFreelancerdetailsReqBody>(
+    addFreelancerDetails,
+  );
 
 router
   .route("/send-otp")
