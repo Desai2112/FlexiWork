@@ -34,33 +34,33 @@ const freelancers = [
 
 
 const FreelancerCard = ({ freelancer }) => (
-  <div className="flex flex-col items-center bg-white p-6 rounded-xl shadow-lg border border-gray-200">
-    <div className="relative w-32 h-32 flex-shrink-0 overflow-hidden rounded-full border-4 border-blue-600 mb-4">
+  <div className="flex flex-col items-center bg-white p-6 rounded-xl shadow-lg border border-gray-200" style={{background:'rgb(34, 40, 49)', borderColor:'rgb(238,238,238)'}}>
+    <div className="relative w-32 h-32 flex-shrink-0 overflow-hidden rounded-full border-4 border-blue-600 mb-4" style={{borderColor:'rgb(118,171,174)'}}>
       <img className="h-full w-full object-cover" src={freelancer.image} alt={freelancer.name} />
     </div>
     <div className="text-center">
-      <h3 className="text-xl font-semibold text-gray-900 mb-1">{freelancer.name}</h3>
-      <p className="text-sm text-gray-700 mb-2">{freelancer.role}</p>
-      <p className="text-gray-600 text-sm">{freelancer.description}</p>
+      <h3 className="text-xl font-semibold text-gray-900 mb-1" style={{color:'rgb(238,238,238)'}}>{freelancer.name}</h3>
+      <p className="text-sm text-gray-700 mb-2" style={{color:'rgb(238,238,238)'}}>{freelancer.role}</p>
+      <p className="text-gray-600 text-sm" style={{color:'rgb(238,238,238)'}}>{freelancer.description}</p>
     </div>
     <div className="flex items-center justify-center space-x-2 mt-4">
       <FontAwesomeIcon icon={faStar} className="text-yellow-500 text-sm" />
-      <span className="text-sm font-medium text-gray-900">{freelancer.rating}</span>
-      <span className="text-sm text-gray-500">({freelancer.reviews} reviews)</span>
+      <span className="text-sm font-medium text-gray-900" style={{color:'rgb(238,238,238)'}}>{freelancer.rating}</span>
+      <span className="text-sm text-gray-500" style={{color:'rgb(238,238,238)'}}>({freelancer.reviews} reviews)</span>
     </div>
   </div>
 );
 
 const FreelancersSection = () => (
-  <section className="w-full py-12 md:py-24 lg:py-32 bg-gradient-to-r from-blue-50 to-white">
+  <section className="w-full py-12 md:py-24 lg:py-32 bg-gradient-to-r from-blue-50 to-white" style={{background:'rgb(49, 54, 63)'}}>
     <div className="container mx-auto px-4 md:px-6">
       <div className="text-center mb-12">
-        <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 leading-tight mb-4">Meet Our Talented Freelancers</h2>
-        <p className="max-w-3xl mx-auto text-gray-700 mt-4 text-base md:text-lg">
+        <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 leading-tight mb-4" style={{color:'rgb(238,238,238)'}}>Meet Our Talented Freelancers</h2>
+        <p className="max-w-3xl mx-auto text-gray-700 mt-4 text-base md:text-lg" style={{color:'rgb(238,238,238)'}}>
           Our top-rated freelancers are ready to help you achieve your goals with their exceptional skills and expertise. Explore their profiles and find the perfect match for your project.
         </p>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8" style={{color:'rgb(238,238,238)'}}>
         {freelancers.map((freelancer, index) => (
           <FreelancerCard key={index} freelancer={freelancer} />
         ))}

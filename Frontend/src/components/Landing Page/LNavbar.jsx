@@ -9,26 +9,26 @@ const LNavbar = () => {
   };
 
   return (
-    <header className="bg-white shadow-md">
+    <header className="bg-white shadow-md" style={{background:'rgb(34,40,49)'}}>
       <div className="container mx-auto flex items-center justify-between px-4 py-3 lg:px-6">
         <Link to="/" className="flex items-center ml-8">
           <img
-            src="https://res.cloudinary.com/dgvslio7u/image/upload/v1722411107/tyqao18fdxtj7pefzc3n.png"
+            src="https://res.cloudinary.com/dgwtgr6do/image/upload/v1727454923/wklcgejokh0lqrrbphaz.png"
             alt="Freelance Hub"
             className="h-18 w-24"
           />
         </Link>
         <nav className="hidden md:flex flex-1 items-center justify-center space-x-16 text-lg font-medium">
-          <a href="#hero" className="hover:text-blue-600 transition-colors">
+          <a href="#hero" className="hover:text-blue-600 transition-colors hover:font-bold" style={{color:'rgb(238, 238, 238)'}}>
             Home
           </a>
-          <a href="#services" className="hover:text-blue-600 transition-colors">
+          <a href="#services" className="hover:text-blue-600 transition-colors hover:font-bold" style={{color:'rgb(238, 238, 238)'}}>
             Services
           </a>
-          <a href="#freelancers" className="hover:text-blue-600 transition-colors">
+          <a href="#freelancers" className="hover:text-blue-600 transition-colors hover:font-bold" style={{color:'rgb(238, 238, 238)'}}>
             Freelancers
           </a>
-          <a href="#contact" className="hover:text-blue-600 transition-colors">
+          <a href="#contact" className="hover:text-blue-600 transition-colors hover:font-bold" style={{color:'rgb(238, 238, 238)'}}>
             Contact Us
           </a>
         </nav>
@@ -53,7 +53,8 @@ const LNavbar = () => {
         </button>
         <Link
           to="/login"
-          className="hidden md:block bg-blue-600 text-white px-4 py-2 mr-8 rounded-lg hover:bg-blue-700 transition-colors"
+          className="hidden md:block text-white px-4 py-2 mr-8 rounded-lg hover:bg-blue-700 transition-colors"
+          style={{background:'rgb(118,171,174)',color:'rgb(238,238,238)'}}
         >
           Login
         </Link>

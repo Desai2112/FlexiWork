@@ -16,20 +16,21 @@ const HeroSection = () => {
   }, []);
 
   return (
-    <section className="w-full py-16 md:py-24 lg:py-32 bg-gray-50 text-gray-800">
+    <section className="w-full py-16 md:py-24 lg:py-32 bg-gray-50 text-gray-800" style={{background:'rgb(49, 54, 63)'}}>
       <div className="container mx-auto px-6 md:px-12">
         <div className="grid gap-12 lg:grid-cols-2 lg:gap-16 items-center">
           <div className="flex flex-col justify-center space-y-6 lg:space-y-8">
             <div className="hero-text space-y-5">
-              <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl text-gray-900 leading-tight">
+              <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl text-gray-900 leading-tight" style={{color:'rgb(238,238,238)'}}>
                 Elevate Your Projects with Top Freelancers
               </h1>
-              <p className="text-lg md:text-xl text-gray-700 max-w-lg lg:max-w-xl">
+              <p className="text-lg md:text-xl text-gray-700 max-w-lg lg:max-w-xl" style={{color:'rgb(238,238,238)'}}>
                 Partner with skilled freelancers to drive your business forward. Discover talents who deliver exceptional results on time, every time.
               </p>
             </div>
             <div className="flex flex-col gap-4 sm:flex-row">
               <a
+              style={{background:'rgb(118,171,174)'}}
                 className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-8 py-3 text-base font-semibold text-white shadow-md hover:bg-blue-700 hover:shadow-lg transition-all duration-300 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600"
                 href="#"
               >
